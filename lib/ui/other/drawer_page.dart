@@ -42,6 +42,7 @@ class _DrawerPageState extends State<DrawerPage> {
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: Text(nameSurname), 
+            accountEmail: Text("fdsffdsf"),
             currentAccountPicture:
              ClipRRect(
               borderRadius: BorderRadius.circular(100),
