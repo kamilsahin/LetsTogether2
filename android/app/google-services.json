@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:494203091842:android:46ee8f34a114f579c4ed9b",
+        "mobilesdk_app_id": "1:494203091842:android:eff548f538ec0a30c4ed9b",
         "android_client_info": {
-          "package_name": "com.letstogether.letstogether"
+          "package_name": "com.example.letstogether"
         }
       },
       "oauth_client": [
