@@ -1,4 +1,5 @@
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:shared_preferences/shared_preferences.dart'; 
 
 class SharedManager {
   SharedPreferences _preferences;
@@ -22,4 +23,4 @@ class SharedManager {
   }
 }
 
-enum SharedKeys { TOKEN }
+enum SharedKeys { TOKEN , MEMBERID , MEMBER_IMAGE , MEMBER_NAMESURNAME}

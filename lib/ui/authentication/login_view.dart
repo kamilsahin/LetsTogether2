@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:letstogether/core/helper/shared_manager.dart';
-import 'package:letstogether/core/model/user/user_auth_error.dart';
-import 'package:letstogether/core/model/user/user_request.dart';
-import 'package:letstogether/core/services/firebase_service.dart';
+import 'package:letstogether/core/model/authentication/firebase_auth_error.dart';
+import 'package:letstogether/core/model/authentication/firebase_auth_success.dart';
+import 'package:letstogether/core/model/authentication/user_request.dart';
+import 'package:letstogether/core/model/authentication/users_service.dart';
+import 'package:letstogether/core/others/firebase_service.dart';
 import 'package:letstogether/core/services/google_signin.dart';
-import 'package:letstogether/ui/view/home/fire_home_view.dart';
+import 'package:letstogether/ui/tabbar_view.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -15,6 +17,7 @@ class _LoginViewState extends State<LoginView> {
   String username;
   String password;
   FirebaseService service = FirebaseService();
+  UsersService _usersService = new UsersService();
 
   @override
   void initState() {
@@ -80,23 +83,24 @@ class _LoginViewState extends State<LoginView> {
 
   void navigateToHome() {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => FireHomeView()));
+        .push(MaterialPageRoute(builder: (context) => TabbarView()));
   }
 
   FloatingActionButton customLoginFABButton(BuildContext context) {
     return FloatingActionButton.extended(
       heroTag: "tt",
       onPressed: () async {
-        print(username);
-        print(password);
-        var result = await service.postUser(UserRequest(
+        var result = await _usersService.postUser(UserRequest(
             email: username, password: password, returnSecureToken: true));
 
         if (result is FirebaseAuthError) {
           scaffold.currentState.showSnackBar(SnackBar(
             content: Text(result.error.message),
           ));
-        } else {
+        } else if(result is FirebaseAuthSuccess) {
+          await SharedManager.instance
+            .saveString(SharedKeys.TOKEN, result.idToken);
+         
           navigateToHome();
         }
       },

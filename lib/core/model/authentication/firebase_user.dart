@@ -7,6 +7,7 @@ class FirebaseUser {
   bool registered;
   String refreshToken;
   String expiresIn;
+  String password;
 
   FirebaseUser(
       {this.kind,
@@ -16,7 +17,8 @@ class FirebaseUser {
         this.idToken,
         this.registered,
         this.refreshToken,
-        this.expiresIn});
+        this.expiresIn,
+        this.password});
 
   FirebaseUser.fromJson(Map<String, dynamic> json) {
     kind = json['kind'];
@@ -27,6 +29,7 @@ class FirebaseUser {
     registered = json['registered'];
     refreshToken = json['refreshToken'];
     expiresIn = json['expiresIn'];
+    password = json['password'];
   }
 
   Map<String, dynamic> toJson() {
@@ -39,6 +42,7 @@ class FirebaseUser {
     data['registered'] = this.registered;
     data['refreshToken'] = this.refreshToken;
     data['expiresIn'] = this.expiresIn;
+    data['password'] = this.password;
     return data;
   }
 }

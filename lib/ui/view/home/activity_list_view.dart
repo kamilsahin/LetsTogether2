@@ -1,134 +1,387 @@
+import 'dart:async';
+
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:letstogether/core/helper/shared_manager.dart';
+import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/core/model/entity/activity.dart';
-import 'package:letstogether/core/services/firebase_service.dart';
+import 'package:letstogether/core/services/activity_service.dart';
+import 'package:letstogether/ui/view/home/activity_detail.dart';
+import 'package:letstogether/ui/view/home/activity_screen.dart';
+import 'package:letstogether/core/model/entity/member.dart';
+import 'package:letstogether/ui/other/drawer_page.dart';
+import 'package:letstogether/ui/other/appbar_page.dart';
 
 class ActivityListView extends StatefulWidget {
+  ActivityListView({Key key, this.auth, this.userId, this.logoutCallback})
+      : super(key: key);
+
+  final BaseAuth auth;
+  final VoidCallback logoutCallback;
+  final String userId;
+
   @override
   _ActivityListViewState createState() => _ActivityListViewState();
 }
 
+final activityReference =
+    FirebaseDatabase.instance.reference().child('activity');
+
 class _ActivityListViewState extends State<ActivityListView> {
-  FirebaseService service;
+  List<Activity> activityList;
+
+  final FirebaseDatabase _database = FirebaseDatabase.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  var _todoQuery;
+
+  StreamSubscription<Event> _onActivityAddedSubscription;
+  StreamSubscription<Event> _onActivityChangedSubscription;
+
+  ActivityService service;
+  var emptyImageUrl =
+      "https://is2-ssl.mzstatic.com/image/thumb/Video2/v4/e1/69/8b/e1698bc0-c23d-2424-40b7-527864c94a8e/pr_source.lsr/268x0w.png";
 
   @override
   void initState() {
     super.initState();
-    service = FirebaseService();
+    service = ActivityService();
+
+    activityList = new List();
+    _todoQuery = _database.reference().child("activity");
+
+    _todoQuery.once();
+/*
+    final StorageReference storageRef =
+        FirebaseStorage.instance.ref().child("einstein-1.png");
+    storageRef.getDownloadURL().then((fileURL) {
+      setState(() {
+        imageUrl = fileURL;
+      });
+    });*/
+
+    _onActivityAddedSubscription =
+        activityReference.onChildAdded.listen(_onActivityAdded);
+    _onActivityChangedSubscription =
+        activityReference.onChildChanged.listen(_onActivityUpdated);
+
+/*
+        var query = FirebaseDatabase.instance
+            .reference()
+            .child("activity")
+            .orderByChild("userId");
+        
+        var snapshot = await query.once();
+        var keys = snapshot.value.keys;
+        var data = snapshot.value;
+
+        for (var key in keys) {
+          var json = new Map<String, dynamic>.from(data[key]);
+          Activity activity = new Activity.fromJson(json, key); 
+          activityList.add(activity);
+        }*/
+  }
+
+  @override
+  void dispose() {
+    _onActivityAddedSubscription.cancel();
+    _onActivityChangedSubscription.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Aktiviteler"),
-      ),
-      // body: Center(child: SwipeList()));
-      body: activityListBuilder,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _fabButton
-    );
+        appBar: AppBarPage(title: "Aktivite Listesi"),
+        drawer: DrawerPage(
+            auth: widget.auth, logoutCallback: widget.logoutCallback),
+        // body: Center(child: SwipeList()));
+        body: _listActivity(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        floatingActionButton: _fabButton);
   }
+
+  signOut() async {
+    try {
+      await widget.auth.signOut();
+      widget.logoutCallback();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Widget get _fabButton => FloatingActionButton(
-    onPressed: () {
-      Navigator.pushNamed(context, "/activityCreate");
-    },
-    child: Icon(Icons.add),
-
-  );
-
-  Widget get activityListBuilder => FutureBuilder(
-        future: service.getActivityList(),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              if (snapshot.hasData) {
-                if (snapshot.data is List) {
-                  return _listActivity(snapshot.data);
-                } else if (snapshot.data is Response) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) async {
-                    await SharedManager.instance
-                        .saveString(SharedKeys.TOKEN, "");
-                    Navigator.of(context).pop();
-                  });
-                }
-              }
-              return _notFoundWidget;
-
-            default:
-              return _waitingWidget;
-          }
+        onPressed: () {
+          Navigator.pushNamed(context, "/activityCreate");
         },
+        child: Icon(Icons.add),
       );
+  /*
+      Widget get activityListBuilder => FutureBuilder(
+            future: service.getActivityList(),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.done:
+                  if (snapshot.hasData) {
+                    if (snapshot.data is List) {
+                      return _listActivity(snapshot.data);
+                    } else if (snapshot.data is Response) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) async {
+                        await SharedManager.instance
+                            .saveString(SharedKeys.TOKEN, "");
+                        Navigator.of(context).pop();
+                      });
+                    }
+                  }
+                  return _notFoundWidget;
+    
+                default:
+                  return _waitingWidget;
+              }
+            },
+          );
+    
+      Widget _listActivity(List<Activity> list) {
+        return ListView.builder(
+            itemCount: activityList.length,
+            itemBuilder: (context, index) => _activityCard(activityList[index]));
+      }*/
 
-  Widget _listActivity(List<Activity> list) {
+  Widget _listActivity() {
+    activityList.sort((a, b) => a.date.compareTo(b.date));
+
     return ListView.builder(
-        itemCount: list.length,
-        itemBuilder: (context, index) => _activityCard(list[index]));
+        itemCount: activityList.length,
+        itemBuilder: (context, index) =>
+            _activityCard(activityList[index], index));
   }
 
-  Widget _activityCard(Activity activity) {
-    return Card(
-      elevation: 5,
-      child: Container(
-        height: 150.0,
-        child: Row(
-          children: <Widget>[
-            Container(
-              height: 100.0,
-              width: 100.0,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(5),
-                      topLeft: Radius.circular(5)),
-                  image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(
-                          "https://is2-ssl.mzstatic.com/image/thumb/Video2/v4/e1/69/8b/e1698bc0-c23d-2424-40b7-527864c94a8e/pr_source.lsr/268x0w.png"))),
-            ),
-            Container(
-              height: 100,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 3, 0, 3),
-                      child: Container(
-                        width: 100,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.teal),
-                            borderRadius:
-                            BorderRadius.all(Radius.circular(50))),
-                        child: Text(
-                          activity.date,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+  Widget _activityCard(Activity activity, int index) {
+    var activityid = activity.key;
+    return Dismissible(
+      key: Key(activityid), 
+      direction: DismissDirection.startToEnd,
+      onDismissed: (direction) async {
+        _deleteActivity(activityid, index);
+      },
+      child: GestureDetector(
+        onTap: () => {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+            return ActivityDetail(
+              activity: activity,
+              imageUrl: activity.imageUrl,
+            );
+          }))
+        },
+        child: Card(
+          color : Theme.of(context).cardTheme.color,
+          elevation: 5,
+          child: Container(
+            decoration: BoxDecoration(
+                border:
+                    Border.all(color: Colors.black),
+                borderRadius: BorderRadius.all(
+                    Radius.circular(20))
                     ),
-                    Text(
-                      activity.header,
-                    ),
-
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 5, 0, 2),
-                      child: Container(
-                        width: 260,
-                        child: Text(
-                          activity.description,
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Color.fromARGB(255, 48, 48, 54)),
+              height: 222.0,
+              child: Column(
+                children: <Widget>[
+                     Container( 
+                     height: 50,
+                    decoration: BoxDecoration(
+                    border:
+                       Border.all(color: Colors.black),
+                       borderRadius: BorderRadius.only( topLeft: Radius.circular(20),
+                                                topRight: Radius.circular(20))),
+                      child: Row(
+                      children: <Widget>[
+                        Container(
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Hero(
+                                      tag: "activityMemberImage$activityid",
+                                      transitionOnUserGestures: false,
+                                      child: Container(
+                                        width: 60.0,
+                                        height: 45.0,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage(activity
+                                                            .createMember
+                                                            .imageUrl !=
+                                                        null
+                                                    ? activity
+                                                        .createMember.imageUrl
+                                                    : emptyImageUrl))),
+                                      ),
+                                    )
+                                  ]),
+                            )
+                            ),
+                        Container(
+                           child: Padding(
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Hero(
+                                  tag: "activityCMemName$activityid",
+                                  child: Text(
+                                    activity.createMember != null
+                                        ? activity.createMember.name
+                                        : "Soyad",
+                                  ),
+                                )
+                                ,
+                                Hero(
+                                  tag: "activityCMemSurname$activityid",
+                                  child: Text(
+                                    activity.createMember != null
+                                        ? activity.createMember.surname
+                                        : "Soyad",
+                                  ),
+                                ), 
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
+                      ],
+                    ),
+                  ),
+                  Container(
+                  //  color: Theme.of(context).primaryColorLight,
+                  height: 170,
+                  decoration: BoxDecoration(
+                    border:
+                       Border.all(color: Colors.black),
+                       borderRadius: BorderRadius.only( bottomLeft: Radius.circular(20),
+                                                bottomRight: Radius.circular(20))),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: MediaQuery.of(context).size.width *  0.6,
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Container (
+                                   decoration: BoxDecoration(
+                                            border:
+                                                Border.all(color: Colors.red),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5))
+                                                ),
+                                child:  Hero(
+                                tag: "activityHeader$activityid",
+                                child: Text(
+                                  activity.header,
+                                  maxLines: 2,
+                                  style: Theme.of(context).textTheme.headline6),
+                                ),
+                                ),
+                              Padding( padding: EdgeInsets.fromLTRB(5, 5, 5, 5)),
+                              new Expanded(
+                                  flex: 1,
+                                  child: new SingleChildScrollView(
+                                    scrollDirection: Axis.vertical,
+                                    child: Container(
+                                     child: Hero(
+                                        tag: "activityDescr$activityid",
+                                        child: Text(
+                                          activity.description,
+                                          maxLines: null,
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Color.fromARGB(
+                                                  255, 48, 48, 54)),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                /* Padding(
+                            padding: EdgeInsets.fromLTRB(0, 5, 0, 2),
+                            child: Container(
+                              width : MediaQuery.of(context).size.width*0.7,
+                              child: Hero(
+                                tag: "activityDescr$activityid",
+                                child: Text(
+                                  activity.description,
+                                  maxLines: 3,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: Color.fromARGB(255, 48, 48, 54)),
+                                ),
+                              ),
+                            ),
+                          ) */
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(  
+                            height: 150,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Hero(
+                                      tag: "activityImage$activityid",
+                                      transitionOnUserGestures: false,
+                                      child: Container(
+                                        width: 120.0,
+                                        height: 90.0,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                                bottomLeft: Radius.circular(5),
+                                                topLeft: Radius.circular(5)),
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage(
+                                                    activity.imageUrl != null
+                                                        ? activity.imageUrl
+                                                        : emptyImageUrl))),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 3, 0, 3),
+                                      child: Container(
+                                        width: 80,
+                                        decoration: BoxDecoration(
+                                            border:
+                                                Border.all(color: Colors.teal),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50))
+                                                ),
+                                        child: Hero(
+                                          tag: "activityDate$activityid",
+                                          transitionOnUserGestures: false,
+                                          child: Text(
+                                            activity.dateStr,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ]),
+                            )),
+                      ],
+                    ),
+                  )
+                ],
+              )),
         ),
       ),
     );
@@ -138,111 +391,94 @@ class _ActivityListViewState extends State<ActivityListView> {
         child: Text("Not Found"),
       );
   Widget get _waitingWidget => Center(child: CircularProgressIndicator());
-}
 
-class SwipeList extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return ListItemWidget();
+  Future<void> _onActivityAdded(Event event) async {
+    print("event start");
+    Activity actv = new Activity.fromSnapshot(event.snapshot);
+    Member actvMem;
+
+    await _database
+        .reference()
+        .child("member/" + actv.memberId)
+        .once()
+        .then((value) => {actvMem = new Member.fromSnapshot(value)});
+    actv.createMember = actvMem;
+    print("member set");
+    setState(() {
+      activityList.add(actv);
+    });
+    print("event end");
+  }
+
+  void _onActivityUpdated(Event event) {
+    var oldActivityValue = activityList
+        .singleWhere((activity) => activity.key == event.snapshot.key);
+    setState(() {
+      activityList[activityList.indexOf(oldActivityValue)] =
+          new Activity.fromSnapshot(event.snapshot);
+    });
+  }
+
+  void _deleteActivity(String activityId, int position) async {
+    await activityReference.child(activityId).remove().then((_) {
+      setState(() {
+        activityList.removeAt(position);
+      });
+    });
+  }
+
+  void _navigateToActivity(BuildContext context, Activity activity) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ActivityScreen(activity)),
+    );
+  }
+
+  void _createNewActivity(BuildContext context) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ActivityScreen(Activity()),
+        ));
   }
 }
 
-class ListItemWidget extends State<SwipeList> {
-  List items = getDummyList();
+class Choice {
+  const Choice({this.title, this.icon});
+
+  final String title;
+  final IconData icon;
+}
+
+class ChoiceCard extends StatelessWidget {
+  const ChoiceCard({Key key, this.choice}) : super(key: key);
+
+  final Choice choice;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return Dismissible(
-          key: Key(items[index]),
-          background: Container(
-            alignment: AlignmentDirectional.centerEnd,
-            color: Colors.red,
-            child: Icon(
-              Icons.delete,
-              color: Colors.white,
-            ),
-          ),
-          onDismissed: (direction) {
-            setState(() {
-              items.removeAt(index);
-            });
-          },
-          direction: DismissDirection.endToStart,
-          child: Card(
-            elevation: 5,
-            child: Container(
-              height: 100.0,
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    height: 100.0,
-                    width: 70.0,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5),
-                            topLeft: Radius.circular(5)),
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(
-                                "https://is2-ssl.mzstatic.com/image/thumb/Video2/v4/e1/69/8b/e1698bc0-c23d-2424-40b7-527864c94a8e/pr_source.lsr/268x0w.png"))),
-                  ),
-                  Container(
-                    height: 100,
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            items[index],
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 3, 0, 3),
-                            child: Container(
-                              width: 30,
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.teal),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                              child: Text(
-                                "3D",
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 5, 0, 2),
-                            child: Container(
-                              width: 260,
-                              child: Text(
-                                "His genius finally recognized by his idol Chester",
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color: Color.fromARGB(255, 48, 48, 54)),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    ));
-  }
-
-  static List getDummyList() {
-    List list = List.generate(10, (i) {
-      return "Item ${i + 1}";
-    });
-    return list;
+    final TextStyle textStyle = Theme.of(context).textTheme.display1;
+    return Card(
+      color: Colors.white,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Icon(choice.icon, size: 128.0, color: textStyle.color),
+            Text(choice.title, style: textStyle),
+          ],
+        ),
+      ),
+    );
   }
 }
+
+const List<Choice> choices = const <Choice>[
+  const Choice(title: 'Car', icon: Icons.directions_car),
+  const Choice(title: 'Bicycle', icon: Icons.directions_bike),
+  const Choice(title: 'Boat', icon: Icons.directions_boat),
+  const Choice(title: 'Bus', icon: Icons.directions_bus),
+  const Choice(title: 'Train', icon: Icons.directions_railway),
+  const Choice(title: 'Walk', icon: Icons.directions_walk),
+];

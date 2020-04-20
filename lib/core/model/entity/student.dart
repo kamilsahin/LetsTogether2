@@ -7,8 +7,8 @@ class Student extends BaseModel {
 
   Student({this.key, this.name, this.number});
 
-  Student.fromJson(Map<String, dynamic> json) {
-    key = json['key'];
+  Student.fromJson(Map<String, dynamic> json, [String key]) {
+    key = key;
     name = json['name'];
     number = json['number'];
   }
@@ -22,7 +22,7 @@ class Student extends BaseModel {
   }
 
   @override
-  fromJson(Map<String, dynamic> json) {
-    return Student.fromJson(json);
+  fromJson(Map<String, dynamic> json, [String key] ) {
+    return Student.fromJson(json,key);
   }
 }

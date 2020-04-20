@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:letstogether/ui/view/home/activity_list_view.dart';
-import 'package:letstogether/ui/view/home/MemberList.dart';
+import 'package:letstogether/ui/view/home/member_list_view.dart';
 
 class TabbarView extends StatefulWidget {
   @override

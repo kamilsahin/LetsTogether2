@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "494203091842",
+    "firebase_url": "https://letstogether-4c8ca.firebaseio.com",
+    "project_id": "letstogether-4c8ca",
+    "storage_bucket": "letstogether-4c8ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494203091842:android:46ee8f34a114f579c4ed9b",
+        "android_client_info": {
+          "package_name": "com.letstogether.letstogether"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "494203091842-s9t59ductjum2jna03um8f72ft2t3q3m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAno8Oo6MQWfkdYCbN82p1TZDEa5JtvC30"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494203091842-s9t59ductjum2jna03um8f72ft2t3q3m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

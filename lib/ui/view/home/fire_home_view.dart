@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_sign_in/widgets.dart';
-import 'package:http/http.dart';
+import 'package:google_sign_in/widgets.dart' as gsi;
+import 'package:http/http.dart' as http;
 import 'package:letstogether/core/helper/shared_manager.dart';
 import 'package:letstogether/core/model/entity/student.dart';
 import 'package:letstogether/core/model/entity/user.dart';
-import 'package:letstogether/core/services/firebase_service.dart';
+import 'package:letstogether/core/others/firebase_service.dart';
 import 'package:letstogether/core/services/google_signin.dart';
 
 class FireHomeView extends StatefulWidget {
@@ -27,7 +27,7 @@ class _FireHomeViewState extends State<FireHomeView> {
       appBar: AppBar(
         title: GoogleSignHelper.instance.user == null
             ? CircleAvatar()
-            : GoogleUserCircleAvatar(
+            : gsi.GoogleUserCircleAvatar(
           identity: GoogleSignHelper.instance.user,
         ),
       ),
@@ -43,7 +43,7 @@ class _FireHomeViewState extends State<FireHomeView> {
           if (snapshot.hasData) {
             if (snapshot.data is List) {
               return _listStudent(snapshot.data);
-            } else if (snapshot.data is Response) {
+            } else if (snapshot.data is http.Response) {
               WidgetsBinding.instance.addPostFrameCallback((_) async {
                 await SharedManager.instance
                     .saveString(SharedKeys.TOKEN, "");

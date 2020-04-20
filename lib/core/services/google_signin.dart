@@ -49,8 +49,9 @@ class GoogleSignHelper {
       idToken: googleAuth.idToken,
     );
 
-    final FirebaseUser user =
-        (await _auth.signInWithCredential(credential)).user;
+  //final AuthFirebaseUser user = (await _auth.signInWithCredential(credential)).user;
+   final user = (await _auth.signInWithCredential(credential)).user;
+ 
     print("signed in " + user.displayName);
     var tokenResult = await user.getIdToken();
     await SharedManager.instance

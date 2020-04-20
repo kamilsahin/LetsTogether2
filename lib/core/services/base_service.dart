@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:letstogether/core/model/base/base_header.dart';
-import 'package:letstogether/core/model/base/base_model.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:letstogether/core/model/base/base_header.dart';
+import 'package:letstogether/core/model/base/base_model.dart';
+
 class BaseService {
-  static const String FIREBASE_URL = "https://hwafire-4cae8.firebaseio.com";
+   static const String FIREBASE_URL = "https://letstogether-7fad5.firebaseio.com";
 
   static BaseService _instance = BaseService._private();
   BaseService._private();
@@ -26,7 +27,7 @@ class BaseService {
           if (jsonModel.length > 1) {
             List<T> list = [];
             jsonModel.forEach((key, value) {
-              list.add(model.fromJson(value));
+               list.add(model.fromJson(value,key));
             });
             return list;
           }

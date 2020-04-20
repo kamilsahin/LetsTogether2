@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:letstogether/core/helper/shared_manager.dart';
+import 'package:http/http.dart' as http;
+import 'package:letstogether/core/helper/shared_manager.dart'; 
 import 'package:letstogether/core/model/entity/member.dart';
-import 'package:letstogether/core/services/firebase_service.dart';
+import 'package:letstogether/core/services/member_service.dart';
 
 class MemberList extends StatefulWidget {
   @override
@@ -10,12 +10,12 @@ class MemberList extends StatefulWidget {
 }
 
 class _MemberListState extends State<MemberList> {
-  FirebaseService service;
+  MemberService _memberService; 
 
   @override
   void initState() {
     super.initState();
-    service = FirebaseService();
+    _memberService = MemberService(); 
   }
 
   @override
@@ -30,14 +30,14 @@ class _MemberListState extends State<MemberList> {
   }
 
   Widget get membersBuilder => FutureBuilder(
-    future: service.getMembers(),
+    future: _memberService.getMemberList(),
     builder: (context, snapshot) {
       switch (snapshot.connectionState) {
         case ConnectionState.done:
           if (snapshot.hasData) {
             if (snapshot.data is List) {
               return _listMembers(snapshot.data);
-            } else if (snapshot.data is Response) {
+            } else if (snapshot.data is http.Response) {
               WidgetsBinding.instance.addPostFrameCallback((_) async {
                 await SharedManager.instance
                     .saveString(SharedKeys.TOKEN, "");
@@ -59,7 +59,6 @@ class _MemberListState extends State<MemberList> {
         itemBuilder: (context, index) => _memberCard(list[index]));
   }
 
-
   Widget _memberCard(Member member) {
     return Card(
        elevation: 5,
@@ -78,7 +77,7 @@ class _MemberListState extends State<MemberList> {
                     image: DecorationImage(
                         fit: BoxFit.cover,
                         image: NetworkImage(
-                            "https://firebasestorage.googleapis.com/v0/b/letstogether-7fad5.appspot.com/o/einstein-1.png")
+                            "https://is2-ssl.mzstatic.com/image/thumb/Video2/v4/e1/69/8b/e1698bc0-c23d-2424-40b7-527864c94a8e/pr_source.lsr/268x0w.png")
                     )
                 ),
               ),
@@ -90,7 +89,7 @@ class _MemberListState extends State<MemberList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        member.name +" " + member.surname ,
+                        member.name + " " + member.surname ,
                       ),
                       Padding(
                         padding: EdgeInsets.fromLTRB(0, 3, 0, 3),
@@ -126,9 +125,6 @@ class _MemberListState extends State<MemberList> {
         ),
     );
   }
-
-
-
 
   Widget get _notFoundWidget => Center(
     child: Text("Not Found"),
@@ -226,8 +222,6 @@ class ListItemWidget extends State<SwipeList> {
                                         fontSize: 15,
                                         color: Color.fromARGB(255, 48, 48, 54)
                                     ),),
-
-
                                 ),
                               )
                             ],
