@@ -15,7 +15,7 @@ class SharedManager {
       _preferences.getString(key.toString()) ?? "";
 
   Future<void> saveString(SharedKeys key, String value) async {
-    await _preferences.setString(key.toString(), value);
+    await _preferences.setString(key.toString(), value); 
   }
 
   Future<void> clear() async {

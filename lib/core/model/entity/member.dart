@@ -14,6 +14,13 @@ class Member extends BaseModel {
   String country;
   String imageUrl;
   String userId;
+  String birthdayStr;
+  String about;
+  String hobies;
+  String instagram;
+  String twitter;
+  String facebook;
+  String website;
 
   Member(
       {this.key,
@@ -27,14 +34,21 @@ class Member extends BaseModel {
         this.city,
         this.country,
         this.imageUrl,
-        this.userId});
+        this.userId,
+        this.about,
+        this.hobies,
+        this.instagram,
+        this.twitter,
+        this.facebook,
+        this.website });
 
   @override
   Member.fromJson(Map<dynamic, dynamic> json,[String key]) {
     this.key = key;
     this.name = json['name'];
     this.surname = json['surname'];
-   // birthday = json['birthday'];
+    this.birthday = this.convertToDate(json['birthday']);
+    this.birthdayStr = json['birthday'];
     this.gender = json['gender'];
     this.phoneNumber = json['phoneNumber'];
     this.phoneNumber2 = json['phoneNumber2'];
@@ -43,14 +57,22 @@ class Member extends BaseModel {
     this.country = json['country'];
     this.imageUrl = json['imageUrl'];
     this.userId = json['userId'];
+
+    this.about = json['about'];
+    this.hobies = json['hobies'];
+    this.instagram = json['instagram'];
+    this.twitter = json['twitter'];
+    this.facebook = json['facebook'];
+    this.website = json['website'];
+ 
   }
  
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['key'] = this.key;
     data['name'] = this.name;
-    data['surname'] = this.surname;
-    data['birthday'] = this.birthday.toString();
+    data['surname'] = this.surname; 
+    data['birthday'] =  this.convertFromDate(this.birthday);
     data['gender'] = this.gender;
     data['phoneNumber'] = this.phoneNumber;
     data['phoneNumber2'] = this.phoneNumber2;
@@ -59,6 +81,13 @@ class Member extends BaseModel {
     data['country'] = this.country;
     data['imageUrl'] = this.imageUrl;
     data['userId'] = this.userId;
+    data['about'] = this.about;
+    data['hobies'] = this.hobies;
+    data['instagram'] = this.instagram;
+    data['twitter'] = this.twitter;
+    data['facebook'] = this.facebook;
+    data['website'] = this.website;
+
     return data;
   }
 
@@ -70,8 +99,9 @@ class Member extends BaseModel {
   Member.fromSnapshot(DataSnapshot snapshot) {
     this.key =snapshot.key;
     this.name = snapshot.value['name'];
-    this.surname = snapshot.value['surname'];
-   // birthday = snapshot.value['birthday'];
+    this.surname = snapshot.value['surname']; 
+    this.birthday = this.convertToDate(snapshot.value['birthday']);
+    this.birthdayStr = snapshot.value['birthday'];
     this.gender = snapshot.value['gender'];
     this.phoneNumber = snapshot.value['phoneNumber'];
     this.phoneNumber2 = snapshot.value['phoneNumber2'];
@@ -80,6 +110,13 @@ class Member extends BaseModel {
     this.country = snapshot.value['country'];
     this.imageUrl = snapshot.value['imageUrl'];
     this.userId = snapshot.value['userId'];
+    this.about = snapshot.value['about'];
+    this.hobies = snapshot.value['hobies'];
+    this.instagram = snapshot.value['instagram'];
+    this.twitter = snapshot.value['twitter'];
+    this.facebook = snapshot.value['facebook'];
+    this.website = snapshot.value['website'];
+
   }
       
 }

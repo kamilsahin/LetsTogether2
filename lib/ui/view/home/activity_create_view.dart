@@ -8,6 +8,7 @@ import 'package:letstogether/core/helper/shared_manager.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/core/model/entity/activity.dart';
 import 'package:intl/intl.dart';
+import 'package:letstogether/ui/base/validators.dart';
 
 class ActivityCreate extends StatefulWidget {
   ActivityCreate({this.auth});
@@ -251,8 +252,8 @@ class _ActivityCreateState extends State<ActivityCreate> {
         ),
         controller: _dateController,
         keyboardType: TextInputType.datetime,
-        validator: (val) => isValidDob(val) ? null : 'Not a valid date',
-        onSaved: (val) => newActivity.date = convertToDate(val),
+        validator: (val) => Validators.instance.isValidBeforeDate(val) ? null : 'Not a valid date',
+        onSaved: (val) => newActivity.date = Validators.instance.convertToDate(val),
       )),
       new IconButton(
         icon: new Icon(Icons.more_horiz),
@@ -275,7 +276,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
         ),
         controller: _timeController,
         keyboardType: TextInputType.number,
-        validator: (val) => isValidTime(val) ? null : 'Not a valid time',
+        validator: (val) => Validators.instance.isValidTime(val) ? null : 'Not a valid time',
         onSaved: (val) => newActivity.time = val,
       )),
       new IconButton(
@@ -291,7 +292,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
   Future<Null> _chooseDate(
       BuildContext context, String initialDateString) async {
     var now = new DateTime.now();
-    var initialDate = convertToDate(initialDateString) ?? now;
+    var initialDate = Validators.instance.convertToDate(initialDateString) ?? now;
 /*    initialDate = (initialDate.isAfter(now)
         ? initialDate
         : now);
@@ -304,61 +305,23 @@ class _ActivityCreateState extends State<ActivityCreate> {
 
     if (result == null) return;
 
-    setState(() {
-      _dateController.text = new DateFormat('dd-MM-yyyy').format(result);
+    setState(() { 
+      _dateController.text = Validators.instance.convertFromDate(result);
     });
   }
 
   Future<void> _selectTime(
       BuildContext context, String initialTimeString) async {
-    var initialTime = convertToTimeOfDay(initialTimeString);
+    var initialTime = Validators.instance.convertToTimeOfDay(initialTimeString);
     final TimeOfDay picked = await showTimePicker(
         context: context,
         initialTime: initialTime != null ? initialTime : TimeOfDay.now());
     if (picked != null && picked != selectedTime) selectedTime = picked;
     setState(() {
-      _timeController.text = formatTimeOfDay(picked);
+      _timeController.text = Validators.instance.formatTimeOfDay(picked);
     });
   }
-
-  bool isValidDob(String dob) {
-    if (dob.isEmpty) return true;
-    var d = convertToDate(dob);
-    return d != null && d.isAfter(new DateTime.now());
-  }
-
-  bool isValidTime(String time) {
-    if (time.isEmpty) return false;
-
-    return true;
-  }
-
-  DateTime convertToDate(String input) {
-    try {
-      var d = new DateFormat('dd-MM-yyyy').parseStrict(input);
-      return d;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  TimeOfDay convertToTimeOfDay(String input) {
-    if (input == null || input.isEmpty) return null;
-    try {
-      final format = DateFormat.jm(); //"6:00 AM"
-      return TimeOfDay.fromDateTime(format.parse(input));
-    } catch (e) {
-      return null;
-    }
-  }
-
-  String formatTimeOfDay(TimeOfDay tod) {
-    final now = new DateTime.now();
-    final dt = DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
-    final format = DateFormat.jm(); //"6:00 AM"
-    return format.format(dt);
-  }
-
+   
   File _image;
   String _uploadedFileURL;
   Widget showImageUpload() {
@@ -402,7 +365,6 @@ class _ActivityCreateState extends State<ActivityCreate> {
         FirebaseStorage.instance.ref().child('activity/$_newKey');
     StorageUploadTask uploadTask = storageReference.putFile(_image);
     await uploadTask.onComplete;
-    print('File Uploaded');
     storageReference.getDownloadURL().then((fileURL) {
       setState(() {
         _uploadedFileURL = fileURL;

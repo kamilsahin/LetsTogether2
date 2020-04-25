@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:letstogether/core/model/authentication/auth.dart';
-import 'package:letstogether/ui/other/root_page.dart';
-import 'package:letstogether/ui/theme/red_theme.dart';
-import 'package:letstogether/ui/tabbar_view.dart';
-import 'package:letstogether/ui/theme/turkuaz_theme.dart';
+import 'package:letstogether/ui/authentication/root_page.dart';
+import 'package:letstogether/ui/base/auth_user.dart';
+import 'package:letstogether/ui/base/custom_theme_data.dart';
+import 'package:letstogether/ui/other/tabbar_view.dart';
 import 'package:letstogether/ui/view/home/activity_create_view.dart';
 import 'package:letstogether/ui/view/home/activity_detail.dart';
 import 'package:letstogether/ui/view/home/configuration_page_view.dart';
-import 'package:letstogether/ui/view/home/custom_theme_data.dart';
-import 'package:letstogether/ui/view/home/member_profile.dart';
+import 'package:letstogether/ui/view/base/main_member.dart';
+import 'package:letstogether/ui/view/home/member_profile_main.dart';
 import 'package:letstogether/ui/view/home/activity_list_view.dart';
+import 'package:letstogether/ui/view/home/member_profile_edit.dart';
 import 'package:provider/provider.dart';
 import 'core/helper/shared_manager.dart';
 
@@ -19,6 +20,8 @@ Future<void> main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(builder: (context) => CustomThemeDataModal()),
+      ChangeNotifierProvider(builder: (context) => AuthUser()),
+      ChangeNotifierProvider(builder: (context) => MainMemberDataModal()),
     ],
     child: MyApp(),
   ));
@@ -52,6 +55,7 @@ class MyApp extends StatelessWidget {
         "/activityCreate": (context) => ActivityCreate(),
         "/activityDetail": (context) => new ActivityDetail(),
         "/myProfile": (context) => new MemberProfile(),
+        "/editProfile": (context) => new MemberProfileEdit(),
         "/configurationPage": (context) => new ConfigurationPage(),
         "/main": (context) => TabbarView(),
       },

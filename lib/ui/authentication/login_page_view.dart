@@ -4,6 +4,9 @@ import 'package:letstogether/core/helper/shared_manager.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/core/model/entity/member.dart';
 import 'package:letstogether/ui/authentication/signup_page_view.dart';
+import 'package:letstogether/ui/base/auth_user.dart';
+import 'package:letstogether/ui/view/base/main_member.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({this.auth, this.loginCallback});
@@ -65,11 +68,12 @@ class _LoginPage extends State<LoginPage> {
         for (var key in keys) {
           var json = new Map<String, dynamic>.from(data[key]);
           member = new Member().fromJson(json, key); 
+           Provider.of<AuthUser>(context).setImageUrl( member.imageUrl);
           SharedManager.instance.saveString(SharedKeys.MEMBERID , member.key);
           SharedManager.instance.saveString(SharedKeys.MEMBER_NAMESURNAME , member.name +" "+member.surname);
           SharedManager.instance.saveString(SharedKeys.MEMBER_IMAGE , member.imageUrl);
-/*
-          scaffoldKey.currentState.showSnackBar(
+          Provider.of<MainMemberDataModal>(context).setMainMember(member);
+        /*   scaffoldKey.currentState.showSnackBar(
               SnackBar(content: Text("Welcome ${member.name} ${member.surname}",)));*/
         }
 

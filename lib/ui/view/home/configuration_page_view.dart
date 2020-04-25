@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:letstogether/ui/other/appbar_page.dart';
+import 'package:letstogether/ui/base/appbar_page.dart';
+import 'package:letstogether/ui/base/custom_theme_data.dart';
 import 'package:letstogether/ui/theme/green_thema.dart';
 import 'package:letstogether/ui/theme/red_theme.dart';
 import 'package:letstogether/ui/theme/turkuaz_theme.dart';
-import 'package:letstogether/ui/view/home/custom_theme_data.dart';
 import 'package:provider/provider.dart';
 
 class ConfigurationPage extends StatefulWidget {

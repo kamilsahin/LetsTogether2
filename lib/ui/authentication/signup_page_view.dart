@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:letstogether/core/model/authentication/firebase_user.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/core/model/entity/member.dart';
+import 'package:letstogether/ui/base/validators.dart';
 
 class SignupPage extends StatefulWidget {
   SignupPage({this.auth});
@@ -321,7 +322,7 @@ class _SignupPage extends State<SignupPage> {
       inputFormatters: [
         new WhitelistingTextInputFormatter(new RegExp(r'^[()\d -]{1,15}$')),
       ],
-      validator: (value) => isValidPhoneNumber(value)
+      validator: (value) => Validators.instance.isValidPhoneNumber(value)
           ? null
           : 'Phone number must be entered as (###)###-####',
       onSaved: (val) => newMember.phoneNumber = val,
@@ -339,8 +340,8 @@ class _SignupPage extends State<SignupPage> {
         ),
         controller: _controller,
         keyboardType: TextInputType.datetime,
-        validator: (val) => isValidDob(val) ? null : 'Not a valid date',
-        onSaved: (val) => newMember.birthday = convertToDate(val),
+        validator: (val) => Validators.instance.isValidBeforeDate(val) ? null : 'Not a valid date',
+        onSaved: (val) => newMember.birthday = Validators.instance.convertToDate(val),
       )),
       new IconButton(
         icon: new Icon(Icons.more_horiz),
@@ -355,7 +356,7 @@ class _SignupPage extends State<SignupPage> {
   Future<Null> _chooseDate(
       BuildContext context, String initialDateString) async {
     var now = new DateTime.now();
-    var initialDate = convertToDate(initialDateString) ?? now;
+    var initialDate = Validators.instance.convertToDate(initialDateString) ?? now;
     initialDate = (initialDate.year >= 1900 && initialDate.isBefore(now)
         ? initialDate
         : now);
@@ -369,33 +370,9 @@ class _SignupPage extends State<SignupPage> {
     if (result == null) return;
 
     setState(() {
-      _controller.text = new DateFormat.yMd().format(result);
+      _controller.text = Validators.instance.convertFromDate(result);
     });
   }
-
-  bool isValidDob(String dob) {
-    if (dob.isEmpty) return true;
-    var d = convertToDate(dob);
-    return d != null && d.isBefore(new DateTime.now());
-  }
-
-  DateTime convertToDate(String input) {
-    try {
-      var d = new DateFormat.yMd().parseStrict(input);
-      return d;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  bool isValidPhoneNumber(String input) {
-    final RegExp regex = new RegExp(r'^\(\d\d\d\)\d\d\d\-\d\d\d\d$');
-    return regex.hasMatch(input);
-  }
-
-  bool isValidEmail(String input) {
-    final RegExp regex = new RegExp(
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$");
-    return regex.hasMatch(input);
-  }
+  
+ 
 }

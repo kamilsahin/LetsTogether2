@@ -10,7 +10,7 @@
     accentColorBrightness: Brightness.dark,
     canvasColor: Color( 0xfffafafa ),
     scaffoldBackgroundColor: Color( 0xfffafafa ),
-    bottomAppBarColor: Color( 0xffffffff ),
+    bottomAppBarColor: Color( 0xff81c784 ),
     cardColor: Color( 0xffffffff ),
     dividerColor: Color( 0x1f000000 ),
     highlightColor: Color( 0x66bcbcbc ),

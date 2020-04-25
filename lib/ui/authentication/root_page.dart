@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/ui/authentication/login_page_view.dart';
-import 'package:letstogether/ui/other/drawer_page.dart'; 
-import 'package:letstogether/ui/other/appbar_page.dart';  
+import 'package:letstogether/ui/base/appbar_page.dart';
+import 'package:letstogether/ui/base/drawer_page.dart'; 
 import 'package:letstogether/ui/view/home/activity_list_view.dart'; 
 
 enum AuthStatus {

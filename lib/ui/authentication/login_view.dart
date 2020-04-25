@@ -6,7 +6,7 @@ import 'package:letstogether/core/model/authentication/user_request.dart';
 import 'package:letstogether/core/model/authentication/users_service.dart';
 import 'package:letstogether/core/others/firebase_service.dart';
 import 'package:letstogether/core/services/google_signin.dart';
-import 'package:letstogether/ui/tabbar_view.dart';
+import 'package:letstogether/ui/other/tabbar_view.dart';
 
 class LoginView extends StatefulWidget {
   @override

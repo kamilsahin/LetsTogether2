@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in/widgets.dart' as gsi;
 import 'package:http/http.dart' as http;
 import 'package:letstogether/core/helper/shared_manager.dart';
@@ -7,6 +6,7 @@ import 'package:letstogether/core/model/entity/student.dart';
 import 'package:letstogether/core/model/entity/user.dart';
 import 'package:letstogether/core/others/firebase_service.dart';
 import 'package:letstogether/core/services/google_signin.dart';
+import 'package:letstogether/ui/base/common_widgets.dart';
 
 class FireHomeView extends StatefulWidget {
   @override
@@ -51,10 +51,10 @@ class _FireHomeViewState extends State<FireHomeView> {
               });
             }
           }
-          return _notFoundWidget;
+          return CommonWidgets.instance.notFoundWidget;
 
         default:
-          return _waitingWidget;
+          return CommonWidgets.instance.waitingWidget;
       }
     },
   );
@@ -67,10 +67,10 @@ class _FireHomeViewState extends State<FireHomeView> {
           if (snapshot.hasData)
             return _listUser(snapshot.data);
           else
-            return _notFoundWidget;
+            return CommonWidgets.instance.notFoundWidget;
           break;
         default:
-          return _waitingWidget;
+          return CommonWidgets.instance.waitingWidget;
       }
     },
   );
@@ -103,9 +103,5 @@ class _FireHomeViewState extends State<FireHomeView> {
       ),
     );
   }
-
-  Widget get _notFoundWidget => Center(
-    child: Text("Not Found"),
-  );
-  Widget get _waitingWidget => Center(child: CircularProgressIndicator());
+ 
 }
