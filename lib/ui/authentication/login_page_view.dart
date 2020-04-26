@@ -61,26 +61,28 @@ class _LoginPage extends State<LoginPage> {
             .child("member")
             .orderByChild("userId")
             .equalTo(userId);
-        
+
         var snapshot = await query.once();
         var keys = snapshot.value.keys;
         var data = snapshot.value;
 
         for (var key in keys) {
           var json = new Map<String, dynamic>.from(data[key]);
-          member = new Member().fromJson(json, key); 
-           Provider.of<AuthUser>(context).setImageUrl( member.imageUrl);
-          SharedManager.instance.saveString(SharedKeys.MEMBERID , member.key);
-          SharedManager.instance.saveString(SharedKeys.MEMBER_NAMESURNAME , member.name +" "+member.surname);
-          SharedManager.instance.saveString(SharedKeys.MEMBER_IMAGE , member.imageUrl);
+          member = new Member().fromJson(json, key);
+          Provider.of<AuthUser>(context).setImageUrl(member.imageUrl);
+          SharedManager.instance.saveString(SharedKeys.MEMBERID, member.key);
+          SharedManager.instance.saveString(SharedKeys.MEMBER_NAMESURNAME,
+              member.name + " " + member.surname);
+          SharedManager.instance
+              .saveString(SharedKeys.MEMBER_IMAGE, member.imageUrl);
           Provider.of<MainMemberDataModal>(context).setMainMember(member);
-        /*   scaffoldKey.currentState.showSnackBar(
+          /*   scaffoldKey.currentState.showSnackBar(
               SnackBar(content: Text("Welcome ${member.name} ${member.surname}",)));*/
         }
 
         if (userId.length > 0 && userId != null) {
           widget.loginCallback();
-        } 
+        }
       } catch (e) {
         print('Error: $e');
         setState(() {
@@ -109,7 +111,7 @@ class _LoginPage extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        key : scaffoldKey,
+        key: scaffoldKey,
         appBar: new AppBar(
           title: new Text('Lets Together'),
         ),
@@ -118,7 +120,8 @@ class _LoginPage extends State<LoginPage> {
             _showForm(),
             _showCircularProgress(),
           ],
-        ));
+        )
+        );
   }
 
   Widget _showCircularProgress() {
@@ -247,7 +250,8 @@ class _LoginPage extends State<LoginPage> {
 
   Widget showSecondaryButton() {
     return new FlatButton(
-        child: new Text(AppLocalizations.of(context).translate('createAccount')),
+        child:
+            new Text(AppLocalizations.of(context).translate('createAccount')),
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => SignupPage(
