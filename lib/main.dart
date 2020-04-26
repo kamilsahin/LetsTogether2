@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:letstogether/core/model/authentication/auth.dart';
 import 'package:letstogether/ui/authentication/root_page.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/auth_user.dart';
 import 'package:letstogether/ui/base/custom_theme_data.dart';
+import 'package:letstogether/ui/base/main_member.dart';
 import 'package:letstogether/ui/other/tabbar_view.dart';
 import 'package:letstogether/ui/view/home/activity_create_view.dart';
 import 'package:letstogether/ui/view/home/activity_detail.dart';
 import 'package:letstogether/ui/view/home/configuration_page_view.dart';
-import 'package:letstogether/ui/view/base/main_member.dart';
 import 'package:letstogether/ui/view/home/member_profile_main.dart';
 import 'package:letstogether/ui/view/home/activity_list_view.dart';
 import 'package:letstogether/ui/view/home/member_profile_edit.dart';
@@ -32,6 +34,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // home: TabbarView(),
+      supportedLocales: [
+        Locale('en', 'US'),
+        Locale('tr', 'TR'),
+      ],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       title: "MterialApp",
       theme: Provider.of<CustomThemeDataModal>(context).getThemeData,
       /*

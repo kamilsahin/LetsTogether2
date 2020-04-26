@@ -1,9 +1,11 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:letstogether/core/helper/shared_manager.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/core/model/entity/member.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/auth_user.dart';  
 import 'package:letstogether/ui/view/home/member_profile_tabbar.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +23,7 @@ class _DrawerPageState extends State<DrawerPage> {
   String imageUrl =
       "https://is2-ssl.mzstatic.com/image/thumb/Video2/v4/e1/69/8b/e1698bc0-c23d-2424-40b7-527864c94a8e/pr_source.lsr/268x0w.png";
 
-  String nameSurname = "Ad Soyad";
+  String nameSurname;
   @override
   void initState() {
     super.initState();
@@ -37,6 +39,9 @@ class _DrawerPageState extends State<DrawerPage> {
         SharedManager.instance.getStringValue(SharedKeys.MEMBER_NAMESURNAME);
     if (memberNameSurname != null && memberNameSurname != "") {
       nameSurname = memberNameSurname;
+    } else 
+    {
+      nameSurname= AppLocalizations.of(context).translate('nameSurname');
     }
 
 /*
@@ -95,7 +100,7 @@ class _DrawerPageState extends State<DrawerPage> {
           ),
           ListTile(
             leading: Icon(Icons.account_circle),
-            title: Text('Profilim'),
+            title: Text(AppLocalizations.of(context).translate('myProfile')),
             onTap: () {
               String _memberKey =
                   SharedManager.instance.getStringValue(SharedKeys.MEMBERID);
@@ -114,16 +119,16 @@ class _DrawerPageState extends State<DrawerPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Aktiviteler'),
+            leading: Icon(FontAwesomeIcons.list),
+            title: Text(AppLocalizations.of(context).translate('activityList')),
             //  trailing: Icon(Icons.arrow_right),
             onTap: () {
               Navigator.pushNamed(context, "/");
             },
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Takip Ettiğim Üyeler'),
+            leading: Icon(FontAwesomeIcons.userCheck),
+            title: Text(AppLocalizations.of(context).translate('followedUsers')),
             //  trailing: Icon(Icons.arrow_right),
             onTap: () {
               Navigator.pushNamed(context, "/");
@@ -160,22 +165,22 @@ class _DrawerPageState extends State<DrawerPage> {
           ),
 */
           ListTile(
-            leading: Icon(Icons.local_laundry_service),
-            title: Text('Açık Aktivitelerim'),
+            leading: Icon(FontAwesomeIcons.thList),
+            title: Text(AppLocalizations.of(context).translate('myOpenActivities')),
             onTap: () {
               Navigator.pushNamed(context, "/myactivity");
             },
           ),
           ListTile(
-            leading: Icon(Icons.picture_as_pdf),
-            title: Text('Ayarlar'),
+            leading: Icon(FontAwesomeIcons.edit),
+            title: Text(AppLocalizations.of(context).translate('configurations')),
             onTap: () {
               Navigator.pushNamed(context, "/configurationPage");
             },
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
-            title: Text('Çıkış yap'),
+            title: Text(AppLocalizations.of(context).translate('logOut')),
             onTap: () {
               signOut();
             },

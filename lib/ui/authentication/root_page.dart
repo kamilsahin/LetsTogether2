@@ -89,7 +89,7 @@ class _RootPageState extends State<RootPage> {
             logoutCallback: logoutCallback,
           );
         } else
-          return buildWaitingScreen();
+          return buildWaitingScreen(); 
         break;
       default:
         return buildWaitingScreen();

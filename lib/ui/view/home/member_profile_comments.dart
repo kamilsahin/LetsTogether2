@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:letstogether/core/model/entity/member.dart';
 import 'package:letstogether/core/services/activity_service.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/appbar_page.dart';
 
 class MemberProfileComments extends StatefulWidget {
@@ -43,7 +44,7 @@ class _MemberProfileCommentsState extends State<MemberProfileComments> {
   Widget build(BuildContext context) {
     String id = widget.memberKey;
     return Scaffold(
-        appBar: AppBarPage(title: "Üye Yorumları"),
+        appBar: AppBarPage(title: AppLocalizations.of(context).translate('memberComments')),
          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         floatingActionButton: _fabButton
     );
@@ -73,7 +74,7 @@ class _MemberProfileCommentsState extends State<MemberProfileComments> {
                   maxLines: 5,
                   autofocus: true,
                   decoration: new InputDecoration(
-                    labelText: 'Yorumunuz',
+                    labelText: AppLocalizations.of(context).translate('yourComment'),
                   ),
                 ))
               ],

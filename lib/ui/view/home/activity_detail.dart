@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:letstogether/core/model/entity/activity.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 
 
 class ActivityDetail extends StatefulWidget {
@@ -35,6 +37,7 @@ class _ActivityDetailState extends State<ActivityDetail>  {
                 ),
               ),
               showDateText(id, widget.activity.dateStr),
+              showTimeText(id, widget.activity.time),
               showHeaderText(id, widget.activity.header),
               showDescriptionText(id, widget.activity.description),
               Wrap(
@@ -55,7 +58,7 @@ class _ActivityDetailState extends State<ActivityDetail>  {
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)), 
             icon: Icon(Icons.input),
-            label: new Text('Join'),
+            label: new Text( AppLocalizations.of(context).translate('joinActivity')),
             onPressed: joinSubmit,
       );
 
@@ -63,11 +66,25 @@ class _ActivityDetailState extends State<ActivityDetail>  {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
       child: new ListTile(
-        leading: const Icon(Icons.calendar_today),
+        leading: const Icon(FontAwesomeIcons.calendar),
         //title: const Text('Header'),
         title: Hero(
           tag: "activityDate$id",
           child: Container(child: Text(value)),
+        ),
+      ),
+    );
+  }
+
+  Widget showTimeText(String id, String value) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+      child: new ListTile(
+        leading: const Icon(Icons.timer),
+        //title: const Text('Header'),
+        title: Hero(
+          tag: "activityTime$id",
+          child: Container(child: Text(value!=null ? value :  "" )),
         ),
       ),
     );

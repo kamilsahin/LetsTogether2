@@ -45,6 +45,7 @@ class Activity extends BaseModel {
     this.header = json['header'];
     this.description = json['description'];
     this.date = this.convertToDate(json['date']);
+    this.time = json['time'];
     this.dateStr = json['date'];
     this.disctrict = json['disctrict'];
     this.city = json['city'];
@@ -59,6 +60,7 @@ class Activity extends BaseModel {
     data['header'] = this.header;
     data['description'] = this.description;
     data['date'] =  this.convertFromDate(this.date);
+    data['time'] = this.time;
     data['disctrict'] = this.disctrict;
     data['city'] = this.city;
     data['country'] = this.country;
@@ -78,6 +80,7 @@ class Activity extends BaseModel {
     this.description = obj['description'];
     this.date = this.convertToDate(obj['date']);
     this.dateStr = obj['date'];
+    this.time = obj['time'];
     this.disctrict = obj['disctrict'];
     this.city = obj['city'];
     this.country = obj['country'];
@@ -92,6 +95,7 @@ class Activity extends BaseModel {
     this.description = snapshot.value['description'];
     this.date = this.convertToDate(snapshot.value['date']);
     this.dateStr = snapshot.value['date'];
+    this.time = snapshot.value['time'];
     this.disctrict = snapshot.value['disctrict'];
     this.city = snapshot.value['city'];
     this.country = snapshot.value['country'];

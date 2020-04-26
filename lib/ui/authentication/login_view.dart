@@ -6,6 +6,7 @@ import 'package:letstogether/core/model/authentication/user_request.dart';
 import 'package:letstogether/core/model/authentication/users_service.dart';
 import 'package:letstogether/core/others/firebase_service.dart';
 import 'package:letstogether/core/services/google_signin.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/other/tabbar_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -59,7 +60,7 @@ class _LoginViewState extends State<LoginView> {
                   FloatingActionButton.extended(
                     heroTag: "w10",
                     backgroundColor: Colors.green,
-                    label: Text("Google Login"),
+                    label: Text(AppLocalizations.of(context).translate('googleLogin')),
                     icon: Icon(Icons.outlined_flag),
                     onPressed: () async {
                       var data = await GoogleSignHelper.instance.signIn();
@@ -104,7 +105,7 @@ class _LoginViewState extends State<LoginView> {
           navigateToHome();
         }
       },
-      label: Text("Login"),
+      label: Text(AppLocalizations.of(context).translate('login')),
       icon: Icon(Icons.android),
     );
   }
@@ -117,7 +118,10 @@ class _LoginViewState extends State<LoginView> {
         });
       },
       decoration:
-      InputDecoration(border: OutlineInputBorder(), labelText: "Password"),
+      InputDecoration(border: OutlineInputBorder(), 
+      labelText: AppLocalizations.of(context).translate('passwordLabel'),
+      hintText: AppLocalizations.of(context).translate('passwordHint')
+      ),
     );
   }
 
@@ -131,7 +135,10 @@ class _LoginViewState extends State<LoginView> {
         });
       },
       decoration: InputDecoration(
-          border: OutlineInputBorder(), labelText: "Username" ,hintText: "Enter user name"),
+          border: OutlineInputBorder(), 
+          labelText: AppLocalizations.of(context).translate('userNameLabel'),
+          hintText: AppLocalizations.of(context).translate('userNameHint'),
+    )
     );
   }
 }

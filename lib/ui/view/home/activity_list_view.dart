@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/core/model/entity/activity.dart';
 import 'package:letstogether/core/services/activity_service.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/appbar_page.dart';
 import 'package:letstogether/ui/base/drawer_page.dart';
 import 'package:letstogether/ui/other/activity_screen.dart';
@@ -92,8 +93,8 @@ class _ActivityListViewState extends State<ActivityListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBarPage(title: "Aktivite Listesi"),
+    return Scaffold( 
+        appBar: AppBarPage(title: AppLocalizations.of(context).translate('activityList')),
         drawer: DrawerPage(
             auth: widget.auth, logoutCallback: widget.logoutCallback),
         // body: Center(child: SwipeList()));
@@ -274,7 +275,7 @@ class _ActivityListViewState extends State<ActivityListView> {
                                         padding:
                                             EdgeInsets.fromLTRB(0, 3, 0, 3),
                                         child: Container(
-                                          width: 80,
+                                          width: 100,
                                           decoration: BoxDecoration(
                                               border: Border.all(
                                                   color: Colors.teal),
@@ -283,6 +284,19 @@ class _ActivityListViewState extends State<ActivityListView> {
                                           child: showActivityDate(activity),
                                         ),
                                       ),
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(0, 3, 0, 3),
+                                        child: Container(
+                                          width: 60,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.red),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50))),
+                                          child: showActivityTime(activity),
+                                        ),
+                                      )
                                     ]),
                               )),
                         ],
@@ -318,7 +332,7 @@ class _ActivityListViewState extends State<ActivityListView> {
       child: Text(
         activity.createMember != null
             ? activity.createMember.name + " " + activity.createMember.surname
-            : "Ad Soyad",
+            : AppLocalizations.of(context).translate('nameSurname'),
       ),
     );
   }
@@ -368,6 +382,19 @@ class _ActivityListViewState extends State<ActivityListView> {
       child: Text(
         activity.dateStr,
         textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.subtitle1
+      ),
+    );
+  }
+
+   Widget showActivityTime(activity) {
+    return Hero(
+      tag: "activityTime${activity.key}",
+      transitionOnUserGestures: false,
+      child: Text(
+        activity.time!=null ? activity.time : "" ,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.subtitle1
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/appbar_page.dart';
 
 class MemberProfileActivities extends StatefulWidget {
@@ -16,7 +17,7 @@ class _MemberProfileActivitiesState extends State<MemberProfileActivities> {
   Widget build(BuildContext context) {
     String id = widget.memberKey;
     return Scaffold(
-        appBar: AppBarPage(title: "Üye Aktiviteleri"),
+        appBar: AppBarPage(title: AppLocalizations.of(context).translate('memberActivityTitle')),
     );
   }
 }

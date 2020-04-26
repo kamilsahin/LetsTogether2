@@ -1,10 +1,12 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:letstogether/core/helper/shared_manager.dart';
 import 'package:letstogether/core/model/entity/member.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/appbar_page.dart';
+import 'package:letstogether/ui/base/main_member.dart';
 import 'package:letstogether/ui/base/validators.dart';
-import 'package:letstogether/ui/view/base/main_member.dart';
 import 'package:letstogether/ui/view/home/member_profile_edit.dart';
 import 'package:provider/provider.dart';
 
@@ -50,7 +52,7 @@ class _MemberProfileState extends State<MemberProfile> {
     }
 
     return Scaffold(
-        appBar: AppBarPage(title: "Üye Profili"),
+        appBar: AppBarPage(title: AppLocalizations.of(context).translate('memberProfile')),
         body: Stack(
           children: <Widget>[
             _showForm(),
@@ -104,7 +106,7 @@ class _MemberProfileState extends State<MemberProfile> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new ListTile(
-          leading: const Icon(Icons.perm_identity),
+          leading: const Icon(FontAwesomeIcons.birthdayCake),
           title: Container(child: Text(value != null ? value : ""))),
     );
   }
@@ -113,8 +115,8 @@ class _MemberProfileState extends State<MemberProfile> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new ListTile(
-          leading: const Icon(Icons.perm_identity),
-          title: Container(child: Text(value == 0 ? "Kadın" : "Erkek"))),
+          leading: const Icon(FontAwesomeIcons.genderless),
+          title: Container(child: Text(value == 0 ? AppLocalizations.of(context).translate('female') : AppLocalizations.of(context).translate('male')))),
     );
   }
 
@@ -122,7 +124,7 @@ class _MemberProfileState extends State<MemberProfile> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new ListTile(
-          leading: const Icon(Icons.perm_identity),
+          leading: const Icon(FontAwesomeIcons.city),
           title: Container(child: Text(value != null ? value : ""))),
     );
   }
@@ -131,7 +133,7 @@ class _MemberProfileState extends State<MemberProfile> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new ListTile(
-          leading: const Icon(Icons.perm_identity),
+          leading: const Icon(Icons.description),
           title: Container(child: Text(value != null ? value : ""))),
     );
   }
@@ -140,7 +142,7 @@ class _MemberProfileState extends State<MemberProfile> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new ListTile(
-          leading: const Icon(Icons.perm_identity),
+          leading: const Icon(FontAwesomeIcons.campground),
           title: Container(child: Text(value != null ? value : ""))),
     );
   }
@@ -149,7 +151,7 @@ class _MemberProfileState extends State<MemberProfile> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new ListTile(
-          leading: const Icon(Icons.insert_chart),
+          leading: const Icon(FontAwesomeIcons.instagram),
           title: Container(child: Text(value != null ? value : ""))),
     );
   }
@@ -158,7 +160,7 @@ class _MemberProfileState extends State<MemberProfile> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new ListTile(
-          leading: const Icon(Icons.brightness_medium),
+          leading: const Icon(FontAwesomeIcons.twitter),
           title: Container(child: Text(value != null ? value : ""))),
     );
   }
@@ -167,7 +169,7 @@ class _MemberProfileState extends State<MemberProfile> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new ListTile(
-          leading: const Icon(Icons.perm_identity),
+          leading: const Icon(FontAwesomeIcons.facebook),
           title: Container(child: Text(value != null ? value : ""))),
     );
   }
@@ -176,7 +178,7 @@ class _MemberProfileState extends State<MemberProfile> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new ListTile(
-          leading: const Icon(Icons.perm_identity),
+          leading: const Icon(FontAwesomeIcons.weebly),
           title: Container(child: Text(value != null ? value : ""))),
     );
   }
@@ -211,7 +213,7 @@ class _MemberProfileState extends State<MemberProfile> {
                 elevation: 5.0,
                 shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(30.0)),
-                child: new Text('Edit Profile'),
+                child: new Text(AppLocalizations.of(context).translate('editProfile') ),
                 // style: Theme.of(context).textTheme.bodyText2),
                 //  style: new TextStyle(fontSize: 20.0, color: Colors.white)),
                 onPressed: () => {

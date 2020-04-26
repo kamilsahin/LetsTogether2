@@ -4,8 +4,9 @@ import 'package:letstogether/core/helper/shared_manager.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/core/model/entity/member.dart';
 import 'package:letstogether/ui/authentication/signup_page_view.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/auth_user.dart';
-import 'package:letstogether/ui/view/base/main_member.dart';
+import 'package:letstogether/ui/base/main_member.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -211,7 +212,8 @@ class _LoginPage extends State<LoginPage> {
         keyboardType: TextInputType.emailAddress,
         autofocus: false,
         decoration: new InputDecoration(
-            hintText: 'Email',
+            labelText: AppLocalizations.of(context).translate('emailLabel'),
+            hintText: AppLocalizations.of(context).translate('emailHint'),
             icon: new Icon(
               Icons.mail,
             )),
@@ -231,7 +233,8 @@ class _LoginPage extends State<LoginPage> {
         obscureText: true,
         autofocus: false,
         decoration: new InputDecoration(
-            hintText: 'Password',
+            labelText: AppLocalizations.of(context).translate('passwordLabel'),
+            hintText: AppLocalizations.of(context).translate('passwordHint'),
             icon: new Icon(
               Icons.lock,
             )),
@@ -244,7 +247,7 @@ class _LoginPage extends State<LoginPage> {
 
   Widget showSecondaryButton() {
     return new FlatButton(
-        child: new Text('Create account'),
+        child: new Text(AppLocalizations.of(context).translate('createAccount')),
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => SignupPage(
@@ -283,7 +286,7 @@ class _LoginPage extends State<LoginPage> {
             elevation: 5.0,
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)),
-            child: new Text('Login'),
+            child: new Text(AppLocalizations.of(context).translate('login')),
             // style: Theme.of(context).textTheme.bodyText2),
             //  style: new TextStyle(fontSize: 20.0, color: Colors.white)),
             onPressed: validateAndSubmit,

@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:letstogether/core/helper/shared_manager.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/core/model/entity/activity.dart';
-import 'package:intl/intl.dart';
+import 'package:letstogether/ui/base/app_localizations.dart'; 
 import 'package:letstogether/ui/base/validators.dart';
 
 class ActivityCreate extends StatefulWidget {
@@ -26,8 +26,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
   String _newKey;
   DatabaseReference databaseRef;
   Activity newActivity = new Activity();
-  final EdgeInsets edgeInsetsconst = EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0);
-  final MaterialColor textIconColor = Colors.grey;
+  final EdgeInsets edgeInsetsconst = EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0); 
   final FirebaseDatabase _database = FirebaseDatabase.instance;
   TimeOfDay selectedTime;
   // Check if form is valid before perform login or signup
@@ -89,7 +88,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Yeni Aktivite Oluştur'),
+          title: new Text(AppLocalizations.of(context).translate('createNewActivity')),
         ),
         body: Stack(
           children: <Widget>[
@@ -111,14 +110,13 @@ class _ActivityCreateState extends State<ActivityCreate> {
 
   Widget _showForm() {
     return new Container(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0), 
         child: new Form(
           key: _formKey,
           child: new ListView(
             shrinkWrap: true,
             children: <Widget>[
               showImageUpload(),
-              //  showLogo(),
               showHeaderInput(),
               showDescriptionInput(),
               showActivityDateInput(),
@@ -156,24 +154,10 @@ class _ActivityCreateState extends State<ActivityCreate> {
             elevation: 5.0,
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)),
-            child: new Text('Create activity'),
+            child: new Text(AppLocalizations.of(context).translate('createActivity')),
             onPressed: validateAndSubmit,
           ),
         ));
-  }
-
-  Widget showLogo() {
-    return new Hero(
-      tag: 'hero2',
-      child: Padding(
-        padding: edgeInsetsconst,
-        child: CircleAvatar(
-          backgroundColor: Colors.transparent,
-          radius: 48.0,
-          child: Image.asset('assets/flutter-icon.png'),
-        ),
-      ),
-    );
   }
 
   Widget showHeaderInput() {
@@ -183,15 +167,15 @@ class _ActivityCreateState extends State<ActivityCreate> {
         maxLines: 1,
         maxLengthEnforced: true,
         maxLength: 50,
-        autofocus: false,
-        decoration: new InputDecoration(
-            hintText: 'Header',
-            labelText: 'Header',
+        autofocus: true,
+        decoration: new InputDecoration( 
+            hintText: AppLocalizations.of(context).translate('activityHeaderHint'),
+            labelText: AppLocalizations.of(context).translate('activityHeaderLabel'),
             icon: new Icon(
               Icons.account_circle,
-              color: textIconColor,
+              color: Theme.of(context).iconTheme.color ,
             )),
-        validator: (value) => value.isEmpty ? 'Header can\'t be empty' : null,
+        validator: (value) => value.isEmpty ? AppLocalizations.of(context).translate('activityHeaderEmptyError') : null,
         onSaved: (value) => newActivity.header = value.trim(),
       ),
     );
@@ -208,18 +192,18 @@ class _ActivityCreateState extends State<ActivityCreate> {
         maxLines: 4,
         maxLengthEnforced: true,
         maxLength: 300,
-        autofocus: false,
+        autofocus: true,
         keyboardType: TextInputType.multiline, 
         textInputAction: TextInputAction.newline,
         decoration: new InputDecoration(
-            labelText: 'Description',
-            hintText: 'Description',
+            labelText: AppLocalizations.of(context).translate('activityDescrLabel'),
+            hintText: AppLocalizations.of(context).translate('activityDescrHint'),
             icon: new Icon(
               Icons.account_circle,
-              color: textIconColor,
+              color: Theme.of(context).iconTheme.color ,
             )),
         validator: (value) =>
-            value.isEmpty ? 'Description can\'t be empty' : null,
+            value.isEmpty ? AppLocalizations.of(context).translate('activityDescrEmptyError') : null,
         onSaved: (value) => newActivity.description = value.trim(),
       ),
     );
@@ -247,17 +231,17 @@ class _ActivityCreateState extends State<ActivityCreate> {
           child: new TextFormField(
         decoration: new InputDecoration(
           icon: const Icon(Icons.calendar_today),
-          hintText: 'Enter your activity date',
-          labelText: 'Date',
+          hintText: AppLocalizations.of(context).translate('activityDateHint'),
+          labelText: AppLocalizations.of(context).translate('activityDateLabel'),
         ),
         controller: _dateController,
         keyboardType: TextInputType.datetime,
-        validator: (val) => Validators.instance.isValidBeforeDate(val) ? null : 'Not a valid date',
+        validator: (val) => val.isEmpty ? AppLocalizations.of(context).translate('activityDateEmptyError') : (Validators.instance.isValidAfterDate(val) ? null : AppLocalizations.of(context).translate('dateNotValid')),
         onSaved: (val) => newActivity.date = Validators.instance.convertToDate(val),
       )),
       new IconButton(
         icon: new Icon(Icons.more_horiz),
-        tooltip: 'Choose date',
+        tooltip: AppLocalizations.of(context).translate('chooseDate'),
         onPressed: (() {
           _chooseDate(context, _dateController.text);
         }),
@@ -271,17 +255,17 @@ class _ActivityCreateState extends State<ActivityCreate> {
           child: new TextFormField(
         decoration: new InputDecoration(
           icon: const Icon(Icons.calendar_today),
-          hintText: 'Enter your activity time',
+          hintText: AppLocalizations.of(context).translate('activityTimeChoose'),
           labelText: 'Time',
         ),
         controller: _timeController,
         keyboardType: TextInputType.number,
-        validator: (val) => Validators.instance.isValidTime(val) ? null : 'Not a valid time',
+        validator: (val) => Validators.instance.isValidTime(val) ? null : AppLocalizations.of(context).translate('timeNotValid'),
         onSaved: (val) => newActivity.time = val,
       )),
       new IconButton(
         icon: new Icon(Icons.more_horiz),
-        tooltip: 'Choose time',
+        tooltip: AppLocalizations.of(context).translate('chooseTime'),
         onPressed: (() {
           _selectTime(context, _timeController.text);
         }),
@@ -333,7 +317,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
             )
           : Container(height: 150),
       RaisedButton(
-        child: Text('Choose File'),
+        child: Text(AppLocalizations.of(context).translate('chooseFile')),
         onPressed: chooseFile,
        shape: Theme.of(context).buttonTheme.shape,
        color : Theme.of(context).buttonColor,

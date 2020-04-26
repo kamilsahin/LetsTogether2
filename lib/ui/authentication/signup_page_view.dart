@@ -1,10 +1,10 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/services.dart'; 
 import 'package:letstogether/core/model/authentication/firebase_user.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/core/model/entity/member.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/validators.dart';
 
 class SignupPage extends StatefulWidget {
@@ -81,7 +81,7 @@ class _SignupPage extends State<SignupPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Yeni Üye Kaydı'),
+          title: new Text(AppLocalizations.of(context).translate('createNewAccount')),
         ),
         body: Stack(
           children: <Widget>[
@@ -166,7 +166,7 @@ class _SignupPage extends State<SignupPage> {
 
   Widget showSecondaryButton() {
     return new FlatButton(
-        child: new Text('Have an account? Sign in',
+        child: new Text(AppLocalizations.of(context).translate('haveAccountSignIn'),
             style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
         onPressed: () {});
   }
@@ -180,7 +180,7 @@ class _SignupPage extends State<SignupPage> {
             elevation: 5.0,
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)), 
-            child: new Text('Create account'),
+            child: new Text(AppLocalizations.of(context).translate('createAccount')),
             onPressed: validateAndSubmit,
           ),
         ));
@@ -208,13 +208,13 @@ class _SignupPage extends State<SignupPage> {
         keyboardType: TextInputType.emailAddress,
         autofocus: false,
         decoration: new InputDecoration(
-            hintText: 'Email',
-            labelText: 'Email',
+            hintText: AppLocalizations.of(context).translate('emailHint'),
+            labelText: AppLocalizations.of(context).translate('emailLabel'),
             icon: new Icon(
               Icons.mail,
               color: textIconColor,
             )),
-        validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
+        validator: (value) => value.isEmpty ? AppLocalizations.of(context).translate('emailNotEmpty') : null,
         onSaved: (value) => user.email = value.trim(),
       ),
     );
@@ -228,13 +228,13 @@ class _SignupPage extends State<SignupPage> {
         obscureText: true,
         autofocus: false,
         decoration: new InputDecoration(
-            labelText: 'Password',
-            hintText: 'Password',
+            labelText: AppLocalizations.of(context).translate('passwordLabel'),
+            hintText: AppLocalizations.of(context).translate('passwordHint'),
             icon: new Icon(
               Icons.lock,
               color: textIconColor,
             )),
-        validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
+        validator: (value) => value.isEmpty ? AppLocalizations.of(context).translate('passwordNotEmpty') : null,
         onSaved: (value) => user.password = value.trim(),
       ),
     );
@@ -247,13 +247,13 @@ class _SignupPage extends State<SignupPage> {
         maxLines: 1,
         autofocus: false,
         decoration: new InputDecoration(
-            hintText: 'Name',
-            labelText: 'Name',
+            hintText: AppLocalizations.of(context).translate('memberNameHint'),
+            labelText: AppLocalizations.of(context).translate('memberNameLabel'),
             icon: new Icon(
               Icons.account_circle,
               color: textIconColor,
             )),
-        validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
+        validator: (value) => value.isEmpty ? AppLocalizations.of(context).translate('memberNameNotEmpty') : null,
         onSaved: (value) => newMember.name = value.trim(),
       ),
     );
@@ -266,13 +266,13 @@ class _SignupPage extends State<SignupPage> {
         maxLines: 1,
         autofocus: false,
         decoration: new InputDecoration(
-            labelText: 'Surname',
-            hintText: 'Surname',
+            labelText: AppLocalizations.of(context).translate('memberSurnameLabel'),
+            hintText: AppLocalizations.of(context).translate('memberSurnameHint'),
             icon: new Icon(
               Icons.account_circle,
               color: textIconColor,
             )),
-        validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
+        validator: (value) => value.isEmpty ? AppLocalizations.of(context).translate('memberSurnameNotEmpty') : null,
         onSaved: (value) => newMember.surname = value.trim(),
       ),
     );
@@ -281,9 +281,9 @@ class _SignupPage extends State<SignupPage> {
   Widget showGenderSelection() {
     return new Row(
       children: <Widget>[ 
-        Text("Gender"),
-        addRadioButton(0, 'Erkek'),
-        addRadioButton(1, 'Kadın')
+        Text(AppLocalizations.of(context).translate('gender')),
+        addRadioButton(0, AppLocalizations.of(context).translate('male')),
+        addRadioButton(1, AppLocalizations.of(context).translate('female'))
       ],
     );
   }
@@ -313,10 +313,10 @@ class _SignupPage extends State<SignupPage> {
 
   Widget showPhoneNumberInput() {
     return new TextFormField(
-      decoration: const InputDecoration(
+      decoration: new InputDecoration(
         icon: const Icon(Icons.phone),
-        hintText: 'Enter a phone number',
-        labelText: 'Phone',
+        hintText: AppLocalizations.of(context).translate('memberPhoneNumHint'),
+        labelText: AppLocalizations.of(context).translate('memberPhoneNumLabel'), 
       ),
       keyboardType: TextInputType.phone,
       inputFormatters: [
@@ -324,7 +324,7 @@ class _SignupPage extends State<SignupPage> {
       ],
       validator: (value) => Validators.instance.isValidPhoneNumber(value)
           ? null
-          : 'Phone number must be entered as (###)###-####',
+          : AppLocalizations.of(context).translate('memberPhoneNumNotValid'),
       onSaved: (val) => newMember.phoneNumber = val,
     );
   }
@@ -335,17 +335,17 @@ class _SignupPage extends State<SignupPage> {
           child: new TextFormField(
         decoration: new InputDecoration(
           icon: const Icon(Icons.calendar_today),
-          hintText: 'Enter your date of birth',
-          labelText: 'Birthday',
+          hintText: AppLocalizations.of(context).translate('memberBirthdayHint'),
+          labelText: AppLocalizations.of(context).translate('memberBirthdayLabel'),
         ),
         controller: _controller,
         keyboardType: TextInputType.datetime,
-        validator: (val) => Validators.instance.isValidBeforeDate(val) ? null : 'Not a valid date',
+        validator: (val) => Validators.instance.isValidBeforeDate(val) ? null : AppLocalizations.of(context).translate('dateNotValid'),
         onSaved: (val) => newMember.birthday = Validators.instance.convertToDate(val),
       )),
       new IconButton(
         icon: new Icon(Icons.more_horiz),
-        tooltip: 'Choose date',
+        tooltip:  AppLocalizations.of(context).translate('chooseDate'),
         onPressed: (() {
           _chooseDate(context, _controller.text);
         }),

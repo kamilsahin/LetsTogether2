@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
-import 'package:letstogether/ui/view/home/activity_list_view.dart';
 
 class AppBarPage extends StatefulWidget implements PreferredSizeWidget  {
   final String title;  

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/appbar_page.dart';
 import 'package:letstogether/ui/base/custom_theme_data.dart';
 import 'package:letstogether/ui/theme/green_thema.dart';
@@ -15,7 +16,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
   @override 
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBarPage(title: "Ayarlar"),
+        appBar: AppBarPage(title: AppLocalizations.of(context).translate('configurations')),
         body: Stack(
           
           children: <Widget>[ 
@@ -23,7 +24,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   RaisedButton(
-                    child: Text("Dark"),
+                    child: Text(AppLocalizations.of(context).translate('dark')),
                     shape: Theme.of(context).buttonTheme.shape,
                     color : Theme.of(context).buttonColor,
                     onPressed: () {
@@ -32,7 +33,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                     },
                   ),
                   RaisedButton(
-                    child: Text("Light"),
+                    child: Text(AppLocalizations.of(context).translate('light')),
                      shape: Theme.of(context).buttonTheme.shape,
                      color : Theme.of(context).buttonColor,
                     onPressed: () {
@@ -41,7 +42,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                     },
                   ),
                   RaisedButton(
-                    child: Text("Red"), 
+                    child: Text(AppLocalizations.of(context).translate('red')), 
                      shape: Theme.of(context).buttonTheme.shape,
                      color : Theme.of(context).buttonColor,
                     onPressed: () {
@@ -50,7 +51,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                     },
                   ),
                   RaisedButton(
-                    child: Text("Blue"),  
+                    child: Text(AppLocalizations.of(context).translate('blue')),  
                     shape: Theme.of(context).buttonTheme.shape,
                     color : Theme.of(context).buttonColor,
                     onPressed: () {
@@ -59,7 +60,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                     },
                   ),
                   RaisedButton(
-                    child: Text("Green"),  
+                    child: Text(AppLocalizations.of(context).translate('green')),  
                     shape: Theme.of(context).buttonTheme.shape,
                     color : Theme.of(context).buttonColor,
                     onPressed: () {
