@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/ui/authentication/login_page_view.dart';
 import 'package:letstogether/ui/base/appbar_page.dart';
-import 'package:letstogether/ui/base/drawer_page.dart'; 
+import 'package:letstogether/ui/base/drawer_page.dart';
+import 'package:letstogether/ui/view/home/activity_list.dart'; 
 import 'package:letstogether/ui/view/home/activity_list_view.dart'; 
 
 enum AuthStatus {
@@ -60,8 +61,7 @@ class _RootPageState extends State<RootPage> {
     return Scaffold(
       appBar: AppBarPage(title: "LetsTogether",),
       drawer: new DrawerPage(  
-            auth: widget.auth,
-            logoutCallback: logoutCallback,),
+            auth: widget.auth),
       body: Container(
         alignment: Alignment.center,
         child: CircularProgressIndicator(),
@@ -83,7 +83,7 @@ class _RootPageState extends State<RootPage> {
         break;
       case AuthStatus.LOGGED_IN:
         if (_userId.length > 0 && _userId != null) {
-          return new ActivityListView(
+          return new ActivityList(
             userId: _userId,
             auth: widget.auth,
             logoutCallback: logoutCallback,

@@ -1,4 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:letstogether/core/helper/shared_manager.dart';
@@ -11,9 +10,10 @@ import 'package:letstogether/ui/view/home/member_profile_edit.dart';
 import 'package:provider/provider.dart';
 
 class MemberProfile extends StatefulWidget {
-  MemberProfile({this.member});
+  MemberProfile({this.member, this.activityId});
 
   final Member member;
+  final String activityId;
 
   @override
   _MemberProfileState createState() => _MemberProfileState();
@@ -25,8 +25,7 @@ class _MemberProfileState extends State<MemberProfile> {
       "https://is2-ssl.mzstatic.com/image/thumb/Video2/v4/e1/69/8b/e1698bc0-c23d-2424-40b7-527864c94a8e/pr_source.lsr/268x0w.png";
 
   String _memberKey; 
-  bool ownProfile = false;
-  final FirebaseDatabase _database = FirebaseDatabase.instance;
+  bool ownProfile = false; 
   Member member;
   
   @override
@@ -70,8 +69,7 @@ class _MemberProfileState extends State<MemberProfile> {
             shrinkWrap: true,
             children: <Widget>[
               showImageUpload(id),
-              showNameSurname(
-                  id, member.name + " " + member.surname),
+              showNameSurname( id, member.name + " " + member.surname),
               showBirthday(id, member.birthday),
               showGender(id, member.gender),
               showCity(id, member.city),
@@ -86,7 +84,7 @@ class _MemberProfileState extends State<MemberProfile> {
           ),
         ));
   }
-
+ 
   Widget showNameSurname(String id, String value) {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
@@ -100,7 +98,7 @@ class _MemberProfileState extends State<MemberProfile> {
       ),
     );
   }
-
+ 
   Widget showBirthday(String id, DateTime valueDate) {
     String value = Validators.instance.convertFromDate(valueDate);
     return Padding(
@@ -182,11 +180,13 @@ class _MemberProfileState extends State<MemberProfile> {
           title: Container(child: Text(value != null ? value : ""))),
     );
   }
-
+ 
   Widget showImageUpload(String id) {
+    if(widget.activityId!=null)
+    { 
     return new Column(children: <Widget>[
      Hero(
-      tag: "activityMemberImage$id}",
+      tag: "activityMemberImage${widget.activityId}",
       child: Container(
         width: 240.0,
         height: 180.0,
@@ -200,8 +200,30 @@ class _MemberProfileState extends State<MemberProfile> {
       ),
      )
     ]);
-  }
+    } else {
+        return new Column(children: <Widget>[
+     Hero(
+      tag: "memberImage$id",
+      child: Container(
+        width: 240.0,
+        height: 180.0,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+          fit: BoxFit.cover,
+          image: NetworkImage(member.imageUrl != null && member.imageUrl != ""
+              ? member.imageUrl
+              : emptyImageUrl),
+        )),
+      ),
+     )
+    ]);
+    }
 
+
+      
+  
+  }
+ 
   Widget showEditButton() {
     return new Visibility(
         visible: ownProfile,

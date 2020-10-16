@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:letstogether/core/helper/shared_manager.dart';
 import 'package:letstogether/core/model/authentication/firebase_auth_error.dart';
 import 'package:letstogether/core/model/base/base_header.dart';
@@ -14,7 +16,10 @@ class MemberService {
   static const String FIREBASE_URL = "https://letstogether-7fad5.firebaseio.com/";
 
    BaseService _baseService = BaseService.instance;
-  
+   FirebaseDatabase _database = FirebaseDatabase.instance;
+   Firestore _fireStore = Firestore.instance;
+
+
    Future getMemberList() async {
         var response = await _baseService.get<Member>(Member(), "member",
         header: Header(
@@ -40,6 +45,21 @@ class MemberService {
         return error;
     }
   }
+  
+  Future getMemberByMemberId(String memberKey) async {
+      Member member;
+     _fireStore.collection("members").document(memberKey).get().then((DocumentSnapshot value) async{
+          member = Member.fromSnapshott(value);
+          print("sssss");
+      }); 
+      print(member);
+      return member;
+  }
+ 
 
+  void saveMember(Member newMember) {
+    _database.reference().child("member").push().set(newMember.toJson());
+    _fireStore.collection("members").add(newMember.toJson());
+  }
 
 }

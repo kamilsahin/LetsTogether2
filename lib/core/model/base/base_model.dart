@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:letstogether/ui/base/validators.dart';
 
 abstract class BaseModel {
   fromJson(Map<String, dynamic> json, [String key]);
@@ -21,5 +23,28 @@ abstract class BaseModel {
       return null;
     }
   }
-  
+
+  int convertFromDateToMillisecond(DateTime date, String time) {
+    try {
+      TimeOfDay timeofDay =  Validators.instance.convertToTimeOfDay(time);
+      final dt = DateTime(date.year, date.month, date.day, timeofDay.hour, timeofDay.minute);
+      return dt.millisecondsSinceEpoch;
+    } catch (e) {
+      return null;
+    }
+  }
+
+   DateTime convertFromMillisecondToDate(int dateMilisecond) {
+    try { 
+      DateTime date =  DateTime.fromMicrosecondsSinceEpoch(dateMilisecond);
+      return date;
+    } catch (e) {
+      return null;
+    }
+  }
+
+
+
+
+ 
 }

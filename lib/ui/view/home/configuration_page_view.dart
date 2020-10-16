@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:letstogether/core/model/base/base_auth.dart';
 import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/appbar_page.dart';
 import 'package:letstogether/ui/base/custom_theme_data.dart';
+import 'package:letstogether/ui/base/drawer_page.dart';
 import 'package:letstogether/ui/theme/green_thema.dart';
 import 'package:letstogether/ui/theme/red_theme.dart';
 import 'package:letstogether/ui/theme/turkuaz_theme.dart';
 import 'package:provider/provider.dart';
 
 class ConfigurationPage extends StatefulWidget {
+  final BaseAuth auth;
+
+  const ConfigurationPage({Key key, this.auth}) : super(key: key);
+  
   @override
   _ConfigurationPageState createState() => _ConfigurationPageState();
 }
@@ -73,8 +79,8 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
 
             //  _showCircularProgress(),
           ],
-        )
-        // drawer: DrawerPage(auth: widget.auth ,logoutCallback : widget.logoutCallback),
+        ),
+         drawer: DrawerPage(auth: widget.auth),
         // body: Center(child: SwipeList()));
         //body:  _listActivity(),
         );

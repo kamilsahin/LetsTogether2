@@ -11,10 +11,10 @@ import 'package:letstogether/ui/view/home/member_profile_tabbar.dart';
 import 'package:provider/provider.dart';
 
 class DrawerPage extends StatefulWidget {
-  final BaseAuth auth;
-  final VoidCallback logoutCallback;
+  final BaseAuth auth; 
 
-  const DrawerPage({Key key, this.auth, this.logoutCallback}) : super(key: key);
+  DrawerPage({this.auth});
+  
   @override
   _DrawerPageState createState() => _DrawerPageState();
 }
@@ -22,11 +22,13 @@ class DrawerPage extends StatefulWidget {
 class _DrawerPageState extends State<DrawerPage> {
   String imageUrl =
       "https://is2-ssl.mzstatic.com/image/thumb/Video2/v4/e1/69/8b/e1698bc0-c23d-2424-40b7-527864c94a8e/pr_source.lsr/268x0w.png";
-
+  String _memberKey;
   String nameSurname;
   @override
   void initState() {
     super.initState();
+    _memberKey = SharedManager.instance.getStringValue(SharedKeys.MEMBERID);
+
   }
 
   @override
@@ -102,9 +104,6 @@ class _DrawerPageState extends State<DrawerPage> {
             leading: Icon(Icons.account_circle),
             title: Text(AppLocalizations.of(context).translate('myProfile')),
             onTap: () {
-              String _memberKey =
-                  SharedManager.instance.getStringValue(SharedKeys.MEMBERID);
-
               FirebaseDatabase _database = FirebaseDatabase.instance;
               Member ownProfileMember;
               var _todoQuery =
@@ -119,11 +118,19 @@ class _DrawerPageState extends State<DrawerPage> {
             },
           ),
           ListTile(
+            leading: Icon(Icons.message),
+            title: Text(AppLocalizations.of(context).translate('myMessages')),
+            //  trailing: Icon(Icons.arrow_right),
+            onTap: () {
+              Navigator.pushNamed(context, "/myMessages");
+            },
+          ),
+          ListTile(
             leading: Icon(FontAwesomeIcons.list),
             title: Text(AppLocalizations.of(context).translate('activityList')),
             //  trailing: Icon(Icons.arrow_right),
             onTap: () {
-              Navigator.pushNamed(context, "/");
+              Navigator.pushNamed(context, "/activityList");
             },
           ),
           ListTile(
@@ -131,7 +138,7 @@ class _DrawerPageState extends State<DrawerPage> {
             title: Text(AppLocalizations.of(context).translate('followedUsers')),
             //  trailing: Icon(Icons.arrow_right),
             onTap: () {
-              Navigator.pushNamed(context, "/");
+              Navigator.pushNamed(context, "/followedUsers");
             },
           ),
 /*
@@ -166,9 +173,16 @@ class _DrawerPageState extends State<DrawerPage> {
 */
           ListTile(
             leading: Icon(FontAwesomeIcons.thList),
-            title: Text(AppLocalizations.of(context).translate('myOpenActivities')),
+            title: Text(AppLocalizations.of(context).translate('myCreatedActivities')),
             onTap: () {
-              Navigator.pushNamed(context, "/myactivity");
+              Navigator.pushNamed(context, "/myCreatedActivities");
+            },
+          ),
+           ListTile(
+            leading: Icon(FontAwesomeIcons.listOl),
+            title: Text(AppLocalizations.of(context).translate('myJoinedActivities')),
+            onTap: () {
+              Navigator.pushNamed(context, "/myJoinedActivities");
             },
           ),
           ListTile(
@@ -193,7 +207,8 @@ class _DrawerPageState extends State<DrawerPage> {
   signOut() async {
     try {
       await widget.auth.signOut();
-      widget.logoutCallback();
+      //  this.logoutCallback();
+       Navigator.pushNamed(context, "/");
     } catch (e) {
       print(e);
     }

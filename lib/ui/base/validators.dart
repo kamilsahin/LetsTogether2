@@ -6,15 +6,19 @@ class Validators {
  Validators._privateConstructor();
 
   bool isValidAfterDate(String dob) {
+    DateTime nowDate = new DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day); 
+
     if (dob.isEmpty) return true;
     var d = convertToDate(dob);
-    return d != null && d.isAfter(new DateTime.now());
+    return d != null && (d.isAtSameMomentAs(nowDate) || d.isAfter(nowDate));
   }
 
   bool isValidBeforeDate(String dob) {
+     DateTime nowDate = new DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day); 
+
      if (dob.isEmpty) return true;
      var d = convertToDate(dob);
-     return d != null && d.isBefore(new DateTime.now());
+     return d != null && (d.isAtSameMomentAs(nowDate) || d.isBefore(nowDate));
    }
  
    bool isValidPhoneNumber(String input) {
@@ -42,6 +46,23 @@ class Validators {
     try {
       var d = new DateFormat('dd-MM-yyyy').format(date);
       return d;
+    } catch (e) {
+      return null;
+    }
+  }
+
+   int convertFromDateToMillisecond(DateTime date) {
+    try {
+      return date.millisecondsSinceEpoch;
+    } catch (e) {
+      return null;
+    }
+  }
+
+   DateTime convertFromMillisecondToDate(int dateMilisecond) {
+    try { 
+      DateTime date =  DateTime.fromMicrosecondsSinceEpoch(dateMilisecond);
+      return date;
     } catch (e) {
       return null;
     }

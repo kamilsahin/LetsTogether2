@@ -17,6 +17,7 @@ class Activity extends BaseModel {
   String time;
   String dateStr;
   Member _createMember;
+  int dateTime;
 
   Member get createMember => _createMember;
 
@@ -51,6 +52,7 @@ class Activity extends BaseModel {
     this.city = json['city'];
     this.country = json['country'];
     this.imageUrl = json['imageUrl'];
+    this.dateTime = json['dateTime']; 
   }
 
   Map<String, dynamic> toJson() {
@@ -65,6 +67,7 @@ class Activity extends BaseModel {
     data['city'] = this.city;
     data['country'] = this.country;
     data['imageUrl'] = this.imageUrl;
+    data['dateTime'] = this.convertFromDateToMillisecond(this.date,this.time); 
     return data;
   }
 
@@ -85,6 +88,7 @@ class Activity extends BaseModel {
     this.city = obj['city'];
     this.country = obj['country'];
     this.imageUrl = obj['imageUrl'];
+     this.dateTime = obj['dateTime'];
   }
  
  
@@ -100,6 +104,7 @@ class Activity extends BaseModel {
     this.city = snapshot.value['city'];
     this.country = snapshot.value['country'];
     this.imageUrl = snapshot.value['imageUrl'];
+    this.dateTime = snapshot.value['dateTime'];
   }
 
 

@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; 
+import 'package:flutter/services.dart';
 import 'package:letstogether/core/model/authentication/firebase_user.dart';
-import 'package:letstogether/core/model/base/base_auth.dart';
+import 'package:letstogether/core/model/base/base_auth.dart'; 
 import 'package:letstogether/core/model/entity/member.dart';
+import 'package:letstogether/core/services/member_service.dart';
 import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/validators.dart';
 
@@ -24,6 +26,10 @@ class _SignupPage extends State<SignupPage> {
   final EdgeInsets edgeInsetsconst = EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0);
   final MaterialColor textIconColor = Colors.grey;
   final FirebaseDatabase _database = FirebaseDatabase.instance;
+  String _currentCity;
+  String _currentDistrict;
+  List distList;
+  MemberService memberService;
   // Check if form is valid before perform login or signup
   bool validateAndSave() {
     final form = _formKey.currentState;
@@ -45,9 +51,10 @@ class _SignupPage extends State<SignupPage> {
       try {
         userId = await widget.auth.signUp(user.email, user.password);
         newMember.userId = userId;
-        _database.reference().child("member").push().set(newMember.toJson());
-      //  widget.auth.sendEmailVerification();
-     //   _showVerifyEmailSentDialog();
+        memberService.saveMember(newMember);
+        
+        //  widget.auth.sendEmailVerification();
+        //   _showVerifyEmailSentDialog();
         print('Signed up user: $userId');
         setState(() {
           _isLoading = false;
@@ -57,7 +64,7 @@ class _SignupPage extends State<SignupPage> {
         setState(() {
           _isLoading = false;
           _errorMessage = e.message;
-        //  _formKey.currentState.reset();
+          //  _formKey.currentState.reset();
         });
       }
     } else {
@@ -69,7 +76,10 @@ class _SignupPage extends State<SignupPage> {
   void initState() {
     _errorMessage = "";
     _isLoading = false;
+    distList = new List();
+    memberService = new MemberService();
     super.initState();
+    gender = "1";
   }
 
   void resetForm() {
@@ -81,7 +91,8 @@ class _SignupPage extends State<SignupPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text(AppLocalizations.of(context).translate('createNewAccount')),
+          title: new Text(
+              AppLocalizations.of(context).translate('createNewAccount')),
         ),
         body: Stack(
           children: <Widget>[
@@ -101,7 +112,7 @@ class _SignupPage extends State<SignupPage> {
     );
   }
 
- /* void _showVerifyEmailSentDialog() {
+  /* void _showVerifyEmailSentDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -132,9 +143,11 @@ class _SignupPage extends State<SignupPage> {
             shrinkWrap: true,
             children: <Widget>[
               showLogo(),
+              showCity(),
+              showDistrict(),
               showNameInput(),
               showSurnameInput(),
-              showGenderSelection(), 
+              showGenderSelection(),
               showBirthDateInput(),
               showPhoneNumberInput(),
               showEmailInput(),
@@ -166,7 +179,8 @@ class _SignupPage extends State<SignupPage> {
 
   Widget showSecondaryButton() {
     return new FlatButton(
-        child: new Text(AppLocalizations.of(context).translate('haveAccountSignIn'),
+        child: new Text(
+            AppLocalizations.of(context).translate('haveAccountSignIn'),
             style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
         onPressed: () {});
   }
@@ -179,8 +193,9 @@ class _SignupPage extends State<SignupPage> {
           child: new FloatingActionButton(
             elevation: 5.0,
             shape: new RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0)), 
-            child: new Text(AppLocalizations.of(context).translate('createAccount')),
+                borderRadius: new BorderRadius.circular(30.0)),
+            child: new Text(
+                AppLocalizations.of(context).translate('createAccount')),
             onPressed: validateAndSubmit,
           ),
         ));
@@ -214,7 +229,9 @@ class _SignupPage extends State<SignupPage> {
               Icons.mail,
               color: textIconColor,
             )),
-        validator: (value) => value.isEmpty ? AppLocalizations.of(context).translate('emailNotEmpty') : null,
+        validator: (value) => value.isEmpty
+            ? AppLocalizations.of(context).translate('emailNotEmpty')
+            : null,
         onSaved: (value) => user.email = value.trim(),
       ),
     );
@@ -234,7 +251,9 @@ class _SignupPage extends State<SignupPage> {
               Icons.lock,
               color: textIconColor,
             )),
-        validator: (value) => value.isEmpty ? AppLocalizations.of(context).translate('passwordNotEmpty') : null,
+        validator: (value) => value.isEmpty
+            ? AppLocalizations.of(context).translate('passwordNotEmpty')
+            : null,
         onSaved: (value) => user.password = value.trim(),
       ),
     );
@@ -245,15 +264,20 @@ class _SignupPage extends State<SignupPage> {
       padding: edgeInsetsconst,
       child: new TextFormField(
         maxLines: 1,
+        maxLength: 20,
+        maxLengthEnforced: true,
         autofocus: false,
         decoration: new InputDecoration(
             hintText: AppLocalizations.of(context).translate('memberNameHint'),
-            labelText: AppLocalizations.of(context).translate('memberNameLabel'),
+            labelText:
+                AppLocalizations.of(context).translate('memberNameLabel'),
             icon: new Icon(
               Icons.account_circle,
               color: textIconColor,
             )),
-        validator: (value) => value.isEmpty ? AppLocalizations.of(context).translate('memberNameNotEmpty') : null,
+        validator: (value) => value.isEmpty
+            ? AppLocalizations.of(context).translate('memberNameNotEmpty')
+            : null,
         onSaved: (value) => newMember.name = value.trim(),
       ),
     );
@@ -264,30 +288,35 @@ class _SignupPage extends State<SignupPage> {
       padding: edgeInsetsconst,
       child: new TextFormField(
         maxLines: 1,
+        maxLength: 20,
+        maxLengthEnforced: true,
         autofocus: false,
         decoration: new InputDecoration(
-            labelText: AppLocalizations.of(context).translate('memberSurnameLabel'),
-            hintText: AppLocalizations.of(context).translate('memberSurnameHint'),
+            labelText:
+                AppLocalizations.of(context).translate('memberSurnameLabel'),
+            hintText:
+                AppLocalizations.of(context).translate('memberSurnameHint'),
             icon: new Icon(
               Icons.account_circle,
               color: textIconColor,
             )),
-        validator: (value) => value.isEmpty ? AppLocalizations.of(context).translate('memberSurnameNotEmpty') : null,
+        validator: (value) => value.isEmpty
+            ? AppLocalizations.of(context).translate('memberSurnameNotEmpty')
+            : null,
         onSaved: (value) => newMember.surname = value.trim(),
       ),
     );
   }
- 
+
   Widget showGenderSelection() {
     return new Row(
-      children: <Widget>[ 
+      children: <Widget>[
         Text(AppLocalizations.of(context).translate('gender')),
         addRadioButton(0, AppLocalizations.of(context).translate('male')),
         addRadioButton(1, AppLocalizations.of(context).translate('female'))
       ],
     );
   }
-
 
   String gender;
 
@@ -299,6 +328,7 @@ class _SignupPage extends State<SignupPage> {
           activeColor: Theme.of(context).primaryColor,
           value: btnValue.toString(),
           groupValue: gender,
+          
           onChanged: (value) {
             setState(() {
               newMember.gender = btnValue;
@@ -316,7 +346,8 @@ class _SignupPage extends State<SignupPage> {
       decoration: new InputDecoration(
         icon: const Icon(Icons.phone),
         hintText: AppLocalizations.of(context).translate('memberPhoneNumHint'),
-        labelText: AppLocalizations.of(context).translate('memberPhoneNumLabel'), 
+        labelText:
+            AppLocalizations.of(context).translate('memberPhoneNumLabel'),
       ),
       keyboardType: TextInputType.phone,
       inputFormatters: [
@@ -335,17 +366,22 @@ class _SignupPage extends State<SignupPage> {
           child: new TextFormField(
         decoration: new InputDecoration(
           icon: const Icon(Icons.calendar_today),
-          hintText: AppLocalizations.of(context).translate('memberBirthdayHint'),
-          labelText: AppLocalizations.of(context).translate('memberBirthdayLabel'),
+          hintText:
+              AppLocalizations.of(context).translate('memberBirthdayHint'),
+          labelText:
+              AppLocalizations.of(context).translate('memberBirthdayLabel'),
         ),
         controller: _controller,
         keyboardType: TextInputType.datetime,
-        validator: (val) => Validators.instance.isValidBeforeDate(val) ? null : AppLocalizations.of(context).translate('dateNotValid'),
-        onSaved: (val) => newMember.birthday = Validators.instance.convertToDate(val),
+        validator: (val) => Validators.instance.isValidBeforeDate(val)
+            ? null
+            : AppLocalizations.of(context).translate('dateNotValid'),
+        onSaved: (val) =>
+            newMember.birthday = Validators.instance.convertToDate(val),
       )),
       new IconButton(
         icon: new Icon(Icons.more_horiz),
-        tooltip:  AppLocalizations.of(context).translate('chooseDate'),
+        tooltip: AppLocalizations.of(context).translate('chooseDate'),
         onPressed: (() {
           _chooseDate(context, _controller.text);
         }),
@@ -353,10 +389,22 @@ class _SignupPage extends State<SignupPage> {
     ]);
   }
 
+
+  void _onSelectedState(String value) {
+    setState(() {
+      print(value);
+    });
+  }
+
+  void _onSelectedLGA(String value) {
+    setState(() => print(value));
+  }
+
   Future<Null> _chooseDate(
       BuildContext context, String initialDateString) async {
     var now = new DateTime.now();
-    var initialDate = Validators.instance.convertToDate(initialDateString) ?? now;
+    var initialDate =
+        Validators.instance.convertToDate(initialDateString) ?? now;
     initialDate = (initialDate.year >= 1900 && initialDate.isBefore(now)
         ? initialDate
         : now);
@@ -373,6 +421,83 @@ class _SignupPage extends State<SignupPage> {
       _controller.text = Validators.instance.convertFromDate(result);
     });
   }
-  
- 
+
+  Widget showCity() {
+    return StreamBuilder(
+      stream: _database.reference().child("city").once().asStream(),
+      builder: (BuildContext context, snapshot) {
+        if (!snapshot.hasData) return Text(AppLocalizations.of(context).translate('loading'));
+        List cityList = snapshot.data.value;
+        return Padding(
+            padding: edgeInsetsconst,
+            child: DropdownButtonFormField<String>(
+              isDense: true,
+              hint: Text(AppLocalizations.of(context).translate('city')),
+              value: _currentCity,
+              onChanged: (String newValue) {
+                 _currentDistrict = null;
+                setState(() {
+                  _currentCity = newValue; 
+                });
+              },
+              validator: (value) => value == null ? 'field required' : null,
+              onSaved: (val) =>  newMember.city = val,
+              items: cityList.map((e) {
+                return new DropdownMenuItem<String>(
+                  value: e["id"].toString(),
+                  child: new Text(
+                    e["name"],
+                  ),
+                );
+              }).toList(),
+            ));
+      },
+    );
+  }
+
+  Widget showDistrict() {
+    if (_currentCity == null )
+      return Text(AppLocalizations.of(context).translate('selectCity'));
+    else {  
+      return StreamBuilder(
+        stream: _database
+            .reference()
+            .child("district")
+            .orderByChild("city_id")
+            .equalTo(_currentCity)
+            .once()
+            .asStream(),
+        builder: (BuildContext context, snapshot) {
+          if (!snapshot.hasData) return new Text(AppLocalizations.of(context).translate('loading'));
+         distList.clear();
+          snapshot.data.value.forEach((key, value) {
+            distList.add(value);
+          });
+
+          return Padding(
+              padding: edgeInsetsconst,
+              child: DropdownButton<String>( 
+                hint: new Text(AppLocalizations.of(context).translate('district')),
+                value: _currentDistrict,
+                onChanged: (String newValue) { 
+                  setState(() {
+                    _currentDistrict = newValue;
+                    newMember.disctrict= newValue;
+                  });
+                },
+              //  validator: (value) => value == null ? 'field required' : null,
+             //   onSaved: (val) => newMember.disctrict = val,
+                items: distList.map((e) {
+                  return new DropdownMenuItem<String>(
+                    value: e["id"].toString(),
+                    child: new Text(
+                      e["name"],
+                    ),
+                  );
+                }).toList(),
+              ));
+        },
+      );
+    }
+  }
 }

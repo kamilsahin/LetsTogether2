@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:letstogether/core/helper/shared_manager.dart';
@@ -75,9 +76,23 @@ class _LoginPage extends State<LoginPage> {
               member.name + " " + member.surname);
           SharedManager.instance
               .saveString(SharedKeys.MEMBER_IMAGE, member.imageUrl);
+          SharedManager.instance
+              .saveString(SharedKeys.CITY , member.city);
+           SharedManager.instance
+              .saveString(SharedKeys.DISCTRICT , member.disctrict);
           Provider.of<MainMemberDataModal>(context).setMainMember(member);
           /*   scaffoldKey.currentState.showSnackBar(
               SnackBar(content: Text("Welcome ${member.name} ${member.surname}",)));*/
+
+           Map<String,String> userMap = {
+            "name" : member.name,
+            "email" : member.surname
+            };
+/*
+          Firestore.instance.collection("users").add(userMap).catchError((e){
+            print(e);
+          });*/
+   
         }
 
         if (userId.length > 0 && userId != null) {

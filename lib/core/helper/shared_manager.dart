@@ -23,4 +23,4 @@ class SharedManager {
   }
 }
 
-enum SharedKeys { TOKEN , MEMBERID , MEMBER_IMAGE , MEMBER_NAMESURNAME}
+enum SharedKeys { TOKEN , MEMBERID , MEMBER_IMAGE , MEMBER_NAMESURNAME , CITY, DISCTRICT}

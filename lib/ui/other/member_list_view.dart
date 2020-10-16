@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:letstogether/core/helper/shared_manager.dart'; 
 import 'package:letstogether/core/model/entity/member.dart';
 import 'package:letstogether/core/services/member_service.dart';
+import 'package:letstogether/ui/base/common_widgets.dart';
 
 class MemberList extends StatefulWidget {
   @override
@@ -45,10 +46,10 @@ class _MemberListState extends State<MemberList> {
               });
             }
           }
-          return _notFoundWidget;
+          return CommonWidgets.instance.notFoundWidget;
 
         default:
-          return _waitingWidget;
+          return CommonWidgets.instance.waitingWidget;
       }
     },
   );
@@ -126,11 +127,7 @@ class _MemberListState extends State<MemberList> {
     );
   }
 
-  Widget get _notFoundWidget => Center(
-    child: Text("Not Found"),
-  );
-  Widget get _waitingWidget => Center(child: CircularProgressIndicator());
-
+ 
 }
 
 class SwipeList extends StatefulWidget {

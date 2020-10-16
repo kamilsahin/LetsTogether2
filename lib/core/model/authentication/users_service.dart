@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:letstogether/core/model/authentication/firebase_auth_error.dart';
 import 'package:letstogether/core/model/authentication/firebase_auth_success.dart';

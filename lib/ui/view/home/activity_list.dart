@@ -1,35 +1,33 @@
-import 'dart:async';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:letstogether/core/helper/shared_manager.dart';
 import 'package:letstogether/core/model/base/base_auth.dart';
-import 'package:letstogether/core/model/entity/activity.dart'; 
-import 'package:letstogether/core/services/activity/activity_service_creator.dart';
-import 'package:letstogether/core/services/activity/activity_service.dart';
+import 'package:letstogether/core/model/entity/activity.dart';
+import 'package:letstogether/core/model/entity/member.dart'; 
 import 'package:letstogether/ui/base/app_localizations.dart';
 import 'package:letstogether/ui/base/appbar_page.dart';
 import 'package:letstogether/ui/base/common_cards.dart';
+import 'package:letstogether/ui/base/common_widgets.dart';
 import 'package:letstogether/ui/base/drawer_page.dart';
-import 'package:letstogether/ui/base/validators.dart';
-import 'package:letstogether/ui/other/activity_screen.dart';
-import 'package:letstogether/core/model/entity/member.dart';
+import 'package:letstogether/ui/other/activity_screen.dart'; 
+import 'package:http/http.dart' as http;  
+import 'package:letstogether/core/services/activity/activity_service_creator.dart';
+import 'package:letstogether/core/services/activity/activity_service.dart';
 
-class ActivityListView extends StatefulWidget {
-  ActivityListView({Key key, this.auth, this.userId, this.logoutCallback})
-      : super(key: key);
+class ActivityList extends StatefulWidget {
 
   final BaseAuth auth;
   final VoidCallback logoutCallback;
   final String userId;
 
+  const ActivityList({Key key, this.auth, this.logoutCallback, this.userId}) : super(key: key);
+
   @override
-  _ActivityListViewState createState() => _ActivityListViewState();
+  _ActivityListState createState() => _ActivityListState();
 }
 
-
-
-class _ActivityListViewState extends State<ActivityListView> {
+class _ActivityListState extends State<ActivityList> {
   final activityReference =
     FirebaseDatabase.instance.reference().child('activity');
     
@@ -39,10 +37,7 @@ class _ActivityListViewState extends State<ActivityListView> {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   var _todoQuery;
-
-  StreamSubscription<Event> _onActivityAddedSubscription;
-  StreamSubscription<Event> _onActivityChangedSubscription;
-
+  
   ActivityService service;
   var emptyImageUrl =
       "https://is2-ssl.mzstatic.com/image/thumb/Video2/v4/e1/69/8b/e1698bc0-c23d-2424-40b7-527864c94a8e/pr_source.lsr/268x0w.png";
@@ -51,53 +46,10 @@ class _ActivityListViewState extends State<ActivityListView> {
   void initState() {
     super.initState();
     service = ActivityServiceCreator.instance;
-
-    String dateee = Validators.instance.convertFromDate(DateTime.now());
-    print(dateee);
-
-    activityList = new List();
-    _todoQuery = _database.
-    reference().
-    child("activity").
-    orderByChild("date").
-    equalTo(dateee);
-
-    _todoQuery.once();
-/*
-    final StorageReference storageRef =
-        FirebaseStorage.instance.ref().child("einstein-1.png");
-    storageRef.getDownloadURL().then((fileURL) {
-      setState(() {
-        imageUrl = fileURL;
-      });
-    });*/
-
-    _onActivityAddedSubscription =
-        activityReference.onChildAdded.listen(_onActivityAdded);
-  /*  _onActivityChangedSubscription =
-        activityReference.onChildChanged.listen(_onActivityUpdated);*/
-
-/*
-        var query = FirebaseDatabase.instance
-            .reference()
-            .child("activity")
-            .orderByChild("userId");
-        
-        var snapshot = await query.once();
-        var keys = snapshot.value.keys;
-        var data = snapshot.value;
-
-        for (var key in keys) {
-          var json = new Map<String, dynamic>.from(data[key]);
-          Activity activity = new Activity.fromJson(json, key); 
-          activityList.add(activity);
-        }*/
   }
 
   @override
-  void dispose() {
-    _onActivityAddedSubscription.cancel();
-    _onActivityChangedSubscription.cancel();
+  void dispose() { 
     super.dispose();
   }
 
@@ -107,11 +59,35 @@ class _ActivityListViewState extends State<ActivityListView> {
         appBar: AppBarPage(title: AppLocalizations.of(context).translate('activityList')),
         drawer: DrawerPage(auth: widget.auth, ),
         // body: Center(child: SwipeList()));
-        body: _listActivity(),
+        body: activityListBuilder,
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         floatingActionButton: _fabButton);
   }
  
+  Widget get activityListBuilder => FutureBuilder(
+        future: service.getActivityList(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              if (snapshot.hasData) {
+                if (snapshot.data is List) {
+                 return _listActivity(snapshot.data);
+                } else if (snapshot.data is http.Response) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) async {
+                    await SharedManager.instance
+                        .saveString(SharedKeys.TOKEN, "");
+                    Navigator.of(context).pop();
+                  });
+                }
+              }
+              return CommonWidgets.instance.notFoundWidget;
+
+            default:
+              return CommonWidgets.instance.waitingWidget;
+          }
+        },
+      );
+
   Widget get _fabButton => FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, "/activityCreate");
@@ -149,22 +125,16 @@ class _ActivityListViewState extends State<ActivityListView> {
             itemBuilder: (context, index) => _activityCard(activityList[index]));
       }*/
 
-  Widget _listActivity() {
-    activityList.sort((a, b) => a.date.compareTo(b.date));
+  Widget _listActivity(List<dynamic> list) {
+    activityList = list;
+    activityList.sort((a, b) => a.dateTime.compareTo(b.dateTime));
 
     return ListView.builder(
         itemCount: activityList.length,
         itemBuilder: (context, index) =>
             CommonCards.instance.activityCard(activityList[index],context,false));
   }
-  
-  Future<void> _onActivityAdded(Event event) async { 
-    Activity actv = new Activity.fromSnapshot(event.snapshot);
-    setState(() {
-     setMemberProd(actv);
-    }); 
-  }
-
+    
   Future<void> setMemberProd(actv) async
   {
      Member actvMem;
@@ -182,25 +152,7 @@ class _ActivityListViewState extends State<ActivityListView> {
     activityList.add(actv);
   }
 
-  void _onActivityUpdated(Event event) async{
-    var oldActivityValue = activityList
-        .singleWhere((activity) => activity.key == event.snapshot.key);
-    setState(() {
-      Activity actv = new Activity.fromSnapshot(event.snapshot);
-      setState(() {
-        setMemberProd(actv);
-      });
-      activityList[activityList.indexOf(oldActivityValue)] = actv;
-    });
-  }
-
-  void _deleteActivity(String activityId, int position) async {
-    await activityReference.child(activityId).remove().then((_) {
-      setState(() {
-        activityList.removeAt(position);
-      });
-    });
-  }
+  
 
   void _navigateToActivity(BuildContext context, Activity activity) async {
     await Navigator.push(
@@ -248,12 +200,4 @@ class ChoiceCard extends StatelessWidget {
     );
   }
 }
-
-const List<Choice> choices = const <Choice>[
-  const Choice(title: 'Car', icon: Icons.directions_car),
-  const Choice(title: 'Bicycle', icon: Icons.directions_bike),
-  const Choice(title: 'Boat', icon: Icons.directions_boat),
-  const Choice(title: 'Bus', icon: Icons.directions_bus),
-  const Choice(title: 'Train', icon: Icons.directions_railway),
-  const Choice(title: 'Walk', icon: Icons.directions_walk),
-];
+  
